@@ -524,7 +524,7 @@ async function globalSearch() {
     document.getElementById('search-results').innerHTML = '<p class="loading-text">Buscando...</p>';
 
     try {
-        const results = await apiRequest(`/search?q=${encodeURIComponent(query)}`);
+        const results = await apiRequest(`/search/?q=${encodeURIComponent(query)}`);
 
         let html = '';
 
