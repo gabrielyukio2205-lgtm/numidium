@@ -285,6 +285,12 @@ function getTypeIcon(type) {
     return icons[type] || icons.unknown;
 }
 
+function showAddEntityModal() {
+    // Switch to ingest view with manual tab
+    switchView('ingest');
+    switchIngestTab('manual');
+}
+
 async function showEntityDetail(id) {
     try {
         const entity = await apiRequest(`/entities/${id}`);
