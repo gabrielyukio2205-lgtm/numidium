@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101418">
+    <link rel="manifest" href="manifest.json">
+    <title>VANTAGE // Sistema de Inteligência</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="network-canvas"></canvas>
+
+    <div class="interface-layer">
+        <header>
+            <div class="brand">
+                <div class="logo-mark"></div>
+                <span>VANTAGE</span>
+            </div>
+            <nav>
+                <a href="#" class="nav-link active" data-view="dashboard">DASHBOARD</a>
+                <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
+                <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
+                <a href="#" class="nav-link" data-view="search">BUSCA</a>
+            </nav>
+            <div class="api-status">
+                <span class="status-dot"></span>
+                <span id="api-status-text">Conectando...</span>
+            </div>
+        </header>
+        
+        <!-- Dashboard View -->
+        <main id="dashboard-view" class="view active">
+            <section class="hero">
+                <div class="hero-content">
+                    <p class="mono-label">SISTEMA OPERACIONAL CENTRAL</p>
+                    <h1>Inteligência Decisiva em Escala Global.</h1>
+                    <p class="hero-desc">Integre dados, decisões e operações em uma única estrutura unificada.</p>
+                </div>
+            </section>
+
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <div class="card-header">
+                        <span class="icon">⦿</span>
+                        <span class="card-title">ENTIDADES</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 id="stat-entities">--</h3>
+                        <p>Total no Sistema</p>
+                        <div class="data-vis-bar"><div class="fill" id="fill-entities"></div></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="card-header">
+                        <span class="icon">✣</span>
+                        <span class="card-title">CONEXÕES</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 id="stat-relationships">--</h3>
+                        <p>Relacionamentos Mapeados</p>
+                        <div class="data-vis-bar"><div class="fill" id="fill-relationships"></div></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="card-header">
+                        <span class="icon">◈</span>
+                        <span class="card-title">EVENTOS</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 id="stat-events">--</h3>
+                        <p>Ocorrências Registradas</p>
+                        <div class="data-vis-bar"><div class="fill" id="fill-events"></div></div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="card-header">
+                        <span class="icon">📄</span>
+                        <span class="card-title">DOCUMENTOS</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 id="stat-documents">--</h3>
+                        <p>Arquivos Indexados</p>
+                        <div class="data-vis-bar"><div class="fill" id="fill-documents"></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="recent-activity">
+                <h2 class="section-title">Atividade Recente</h2>
+                <div id="activity-list" class="activity-list">
+                    <p class="loading-text">Carregando...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Entities View -->
+        <main id="entities-view" class="view">
+            <section class="view-header">
+                <h1>Entidades</h1>
+                <button class="btn-primary" onclick="showAddEntityModal()">+ NOVA ENTIDADE</button>
+            </section>
+
+            <div class="filter-bar">
+                <select id="entity-type-filter" onchange="loadEntities()">
+                    <option value="">Todos os Tipos</option>
+                    <option value="person">Pessoas</option>
+                    <option value="organization">Organizações</option>
+                    <option value="location">Locais</option>
+                    <option value="event">Eventos</option>
+                </select>
+                <input type="text" id="entity-search" placeholder="Buscar entidades..." onkeyup="debounceSearch()">
+            </div>
+
+            <div id="entities-list" class="entities-grid">
+                <p class="loading-text">Carregando entidades...</p>
+            </div>
+        </main>
+
+        <!-- Ingest View -->
+        <main id="ingest-view" class="view">
+            <section class="view-header">
+                <h1>Ingestão de Dados</h1>
+            </section>
+
+            <div class="ingest-tabs">
+                <button class="tab-btn active" onclick="switchIngestTab('wikipedia')">Wikipedia</button>
+                <button class="tab-btn" onclick="switchIngestTab('news')">Notícias</button>
+                <button class="tab-btn" onclick="switchIngestTab('manual')">Manual</button>
+            </div>
+
+            <!-- Wikipedia Tab -->
+            <div id="ingest-wikipedia" class="ingest-panel active">
+                <div class="search-box">
+                    <input type="text" id="wiki-search" placeholder="Buscar na Wikipedia...">
+                    <button class="btn-primary" onclick="searchWikipedia()">BUSCAR</button>
+                </div>
+                <div id="wiki-results" class="results-list"></div>
+            </div>
+
+            <!-- News Tab -->
+            <div id="ingest-news" class="ingest-panel">
+                <div class="search-box">
+                    <input type="text" id="news-search" placeholder="Buscar notícias...">
+                    <button class="btn-primary" onclick="searchNews()">BUSCAR</button>
+                </div>
+                <div class="news-feeds">
+                    <h3>Feeds Disponíveis</h3>
+                    <div id="news-feeds-list" class="feeds-grid"></div>
+                </div>
+                <div id="news-results" class="results-list"></div>
+            </div>
+
+            <!-- Manual Tab -->
+            <div id="ingest-manual" class="ingest-panel">
+                <form id="manual-entity-form" onsubmit="createManualEntity(event)">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="manual-type" required>
+                            <option value="person">Pessoa</option>
+                            <option value="organization">Organização</option>
+                            <option value="location">Local</option>
+                            <option value="event">Evento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="manual-name" required placeholder="Nome da entidade">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea id="manual-desc" rows="4" placeholder="Descrição detalhada..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Latitude (opcional)</label>
+                            <input type="number" id="manual-lat" step="any" placeholder="-23.5505">
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude (opcional)</label>
+                            <input type="number" id="manual-lng" step="any" placeholder="-46.6333">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">CRIAR ENTIDADE</button>
+                </form>
+            </div>
+        </main>
+
+        <!-- Search View -->
+        <main id="search-view" class="view">
+            <section class="view-header">
+                <h1>Busca Global</h1>
+            </section>
+
+            <div class="search-box large">
+                <input type="text" id="global-search" placeholder="Buscar em todo o sistema...">
+                <button class="btn-primary" onclick="globalSearch()">BUSCAR</button>
+            </div>
+
+            <div id="search-results" class="search-results">
+                <p class="hint-text">Digite algo para buscar em entidades, eventos e documentos.</p>
+            </div>
+        </main>
+
+        <!-- Entity Detail Modal -->
+        <div id="entity-modal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <div id="entity-modal-body"></div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="status-bar">
+                <span>NUMIDIUM: <span class="status-ok" id="footer-status">CONECTANDO</span></span>
+                <span class="mono-label">V.1.0.0-BETA</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

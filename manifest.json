@@ -1,0 +1,21 @@
+{
+    "name": "Nebula Swarm",
+    "short_name": "Nebula",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#050505",
+    "theme_color": "#050505",
+    "description": "Uma experiência visual interativa com partículas.",
+    "icons": [
+        {
+            "src": "https://via.placeholder.com/192.png?text=Nebula",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://via.placeholder.com/512.png?text=Nebula",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
