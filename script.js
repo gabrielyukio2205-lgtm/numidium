@@ -129,19 +129,8 @@ animate();
 
 async function apiRequest(endpoint, options = {}) {
     try {
-        // Normalize endpoint: add trailing slash if it doesn't have query params
-        // FastAPI routes are defined with trailing slash
-        let normalizedEndpoint = endpoint;
-        if (!endpoint.includes('?') && !endpoint.endsWith('/')) {
-            normalizedEndpoint = endpoint + '/';
-        } else if (endpoint.includes('?') && !endpoint.split('?')[0].endsWith('/')) {
-            const [path, query] = endpoint.split('?');
-            normalizedEndpoint = path + '/?' + query;
-        }
-
-        const response = await fetch(`${API_BASE}${normalizedEndpoint}`, {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
-            redirect: 'follow',
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
@@ -538,7 +527,7 @@ async function globalSearch() {
     document.getElementById('search-results').innerHTML = '<p class="loading-text">Buscando...</p>';
 
     try {
-        const results = await apiRequest(`/search/?q=${encodeURIComponent(query)}`);
+        const results = await apiRequest(`/search?q=${encodeURIComponent(query)}`);
 
         let html = '';
 
