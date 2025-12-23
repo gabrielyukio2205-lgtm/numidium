@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,13 @@
     <link rel="manifest" href="manifest.json">
     <title>VANTAGE // Sistema de Inteligência</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
+
 <body>
     <canvas id="network-canvas"></canvas>
 
@@ -23,13 +29,14 @@
                 <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="search">BUSCA</a>
+                <a href="#" class="nav-link" data-view="map">MAPA</a>
             </nav>
             <div class="api-status">
                 <span class="status-dot"></span>
                 <span id="api-status-text">Conectando...</span>
             </div>
         </header>
-        
+
         <!-- Dashboard View -->
         <main id="dashboard-view" class="view active">
             <section class="hero">
@@ -49,7 +56,9 @@
                     <div class="card-body">
                         <h3 id="stat-entities">--</h3>
                         <p>Total no Sistema</p>
-                        <div class="data-vis-bar"><div class="fill" id="fill-entities"></div></div>
+                        <div class="data-vis-bar">
+                            <div class="fill" id="fill-entities"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -60,7 +69,9 @@
                     <div class="card-body">
                         <h3 id="stat-relationships">--</h3>
                         <p>Relacionamentos Mapeados</p>
-                        <div class="data-vis-bar"><div class="fill" id="fill-relationships"></div></div>
+                        <div class="data-vis-bar">
+                            <div class="fill" id="fill-relationships"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -71,7 +82,9 @@
                     <div class="card-body">
                         <h3 id="stat-events">--</h3>
                         <p>Ocorrências Registradas</p>
-                        <div class="data-vis-bar"><div class="fill" id="fill-events"></div></div>
+                        <div class="data-vis-bar">
+                            <div class="fill" id="fill-events"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -82,7 +95,9 @@
                     <div class="card-body">
                         <h3 id="stat-documents">--</h3>
                         <p>Arquivos Indexados</p>
-                        <div class="data-vis-bar"><div class="fill" id="fill-documents"></div></div>
+                        <div class="data-vis-bar">
+                            <div class="fill" id="fill-documents"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -203,6 +218,25 @@
             </div>
         </main>
 
+        <!-- Map View -->
+        <main id="map-view" class="view">
+            <section class="view-header">
+                <h1>Mapa Global</h1>
+                <div class="map-filters">
+                    <select id="map-type-filter" onchange="loadMapData()">
+                        <option value="">Todos os Tipos</option>
+                        <option value="person">Pessoas</option>
+                        <option value="organization">Organizações</option>
+                        <option value="location">Locais</option>
+                    </select>
+                </div>
+            </section>
+            <div id="map-container"></div>
+            <div id="map-info" class="map-info-panel">
+                <p class="hint-text">Clique em um marcador para ver detalhes</p>
+            </div>
+        </main>
+
         <!-- Entity Detail Modal -->
         <div id="entity-modal" class="modal">
             <div class="modal-content">
@@ -218,7 +252,9 @@
             </div>
         </footer>
     </div>
-
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

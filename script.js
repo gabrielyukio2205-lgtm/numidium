@@ -180,6 +180,9 @@ function switchView(viewName) {
         case 'ingest':
             loadNewsFeeds();
             break;
+        case 'map':
+            initMap();
+            break;
     }
 }
 
@@ -616,6 +619,95 @@ async function checkApiStatus() {
         document.getElementById('footer-status').classList.remove('status-ok');
     }
     return false;
+}
+
+// ==========================================
+// Map Functions
+// ==========================================
+
+let map = null;
+let mapMarkers = [];
+
+function initMap() {
+    if (map) {
+        loadMapData();
+        return;
+    }
+
+    // Create map centered on Brazil
+    map = L.map('map-container').setView([-15.7801, -47.9292], 4);
+
+    // Add dark tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    loadMapData();
+}
+
+async function loadMapData() {
+    if (!map) return;
+
+    // Clear existing markers
+    mapMarkers.forEach(m => map.removeLayer(m));
+    mapMarkers = [];
+
+    const type = document.getElementById('map-type-filter').value;
+    let endpoint = '/search/geo/';
+    if (type) endpoint += `?entity_type=${type}`;
+
+    try {
+        const entities = await apiRequest(endpoint);
+
+        if (entities.length === 0) {
+            document.getElementById('map-info').innerHTML =
+                '<p class="empty-text">Nenhuma entidade com geolocalização. Importe locais do Wikipedia!</p>';
+            return;
+        }
+
+        entities.forEach(e => {
+            const marker = L.marker([e.lat, e.lng])
+                .addTo(map)
+                .bindPopup(`
+                    <div class="map-entity-popup">
+                        <span class="popup-type">${e.type}</span>
+                        <h4>${e.name}</h4>
+                        <p>Lat: ${e.lat.toFixed(4)}, Lng: ${e.lng.toFixed(4)}</p>
+                    </div>
+                `);
+
+            marker.on('click', () => {
+                document.getElementById('map-info').innerHTML = `
+                    <div class="entity-card" onclick="showEntityDetail('${e.id}')" style="cursor:pointer">
+                        <div class="entity-type ${e.type}">${getTypeIcon(e.type)}</div>
+                        <div class="entity-info">
+                            <h3>${e.name}</h3>
+                            <p>📍 ${e.lat.toFixed(4)}, ${e.lng.toFixed(4)}</p>
+                            <span class="entity-source">Clique para ver detalhes</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            mapMarkers.push(marker);
+        });
+
+        document.getElementById('map-info').innerHTML =
+            `<p class="hint-text">${entities.length} entidade(s) com geolocalização. Clique nos marcadores para detalhes.</p>`;
+
+        // Fit map to markers if we have any
+        if (mapMarkers.length > 0) {
+            const group = new L.featureGroup(mapMarkers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+    } catch (error) {
+        console.error('Error loading map data:', error);
+        document.getElementById('map-info').innerHTML =
+            '<p class="error-text">Erro ao carregar dados do mapa</p>';
+    }
 }
 
 // ==========================================
