@@ -129,8 +129,19 @@ animate();
 
 async function apiRequest(endpoint, options = {}) {
     try {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
+        // Normalize endpoint: add trailing slash if it doesn't have query params
+        // FastAPI routes are defined with trailing slash
+        let normalizedEndpoint = endpoint;
+        if (!endpoint.includes('?') && !endpoint.endsWith('/')) {
+            normalizedEndpoint = endpoint + '/';
+        } else if (endpoint.includes('?') && !endpoint.split('?')[0].endsWith('/')) {
+            const [path, query] = endpoint.split('?');
+            normalizedEndpoint = path + '/?' + query;
+        }
+
+        const response = await fetch(`${API_BASE}${normalizedEndpoint}`, {
             ...options,
+            redirect: 'follow',
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
@@ -655,7 +666,7 @@ async function loadMapData() {
     mapMarkers = [];
 
     const type = document.getElementById('map-type-filter').value;
-    let endpoint = '/search/geo/';
+    let endpoint = '/search/geo';
     if (type) endpoint += `?entity_type=${type}`;
 
     try {
