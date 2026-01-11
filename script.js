@@ -516,6 +516,136 @@ async function createManualEntity(event) {
     }
 }
 
+// AI Analysis
+async function analyzeText() {
+    const text = document.getElementById('analyze-text').value;
+    const autoCreate = document.getElementById('analyze-auto-create').checked;
+    
+    if (!text || text.length < 10) {
+        alert('Por favor, insira um texto com pelo menos 10 caracteres.');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('analyze-results');
+    resultsDiv.innerHTML = `
+        <div class="analyze-loading">
+            <div class="loading-spinner"></div>
+            <p>🧠 Analisando texto com IA (Qwen 3 235B via Cerebras)...</p>
+            <p class="loading-sub">Isso pode levar alguns segundos</p>
+        </div>
+    `;
+    
+    try {
+        const result = await apiRequest('/analyze', {
+            method: 'POST',
+            body: JSON.stringify({
+                text: text,
+                auto_create: autoCreate
+            })
+        });
+        
+        let html = '<div class="analyze-results-content">';
+        
+        // Stats summary
+        html += `
+            <div class="analyze-stats">
+                <div class="stat-item">
+                    <span class="stat-number">${result.stats.total_entities}</span>
+                    <span class="stat-label">Entidades</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${result.stats.total_relationships}</span>
+                    <span class="stat-label">Relacionamentos</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${result.stats.total_events}</span>
+                    <span class="stat-label">Eventos</span>
+                </div>
+                ${autoCreate ? `
+                    <div class="stat-item created">
+                        <span class="stat-number">${result.stats.created_entities}</span>
+                        <span class="stat-label">Criadas no DB</span>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        // Entities
+        if (result.entities.length > 0) {
+            html += '<div class="analyze-section"><h3>📋 Entidades Extraídas</h3><div class="entities-grid small">';
+            result.entities.forEach(e => {
+                html += `
+                    <div class="entity-card mini ${e.created ? 'created' : ''}">
+                        <span class="entity-type-icon">${getTypeIcon(e.type)}</span>
+                        <div class="entity-info">
+                            <strong>${e.name}</strong>
+                            ${e.role ? `<span class="entity-role">${e.role}</span>` : ''}
+                            ${e.created ? '<span class="badge-created">✓ Criado</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+        }
+        
+        // Relationships
+        if (result.relationships.length > 0) {
+            html += '<div class="analyze-section"><h3>🔗 Relacionamentos</h3><div class="relationships-list">';
+            result.relationships.forEach(r => {
+                html += `
+                    <div class="relationship-item ${r.created ? 'created' : ''}">
+                        <span class="rel-source">${r.source}</span>
+                        <span class="rel-arrow">→</span>
+                        <span class="rel-type">${r.relationship_type}</span>
+                        <span class="rel-arrow">→</span>
+                        <span class="rel-target">${r.target}</span>
+                        ${r.created ? '<span class="badge-created">✓</span>' : ''}
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+        }
+        
+        // Events
+        if (result.events.length > 0) {
+            html += '<div class="analyze-section"><h3>📅 Eventos</h3><div class="events-list">';
+            result.events.forEach(ev => {
+                html += `
+                    <div class="event-item ${ev.created ? 'created' : ''}">
+                        <strong>${ev.description}</strong>
+                        ${ev.event_type ? `<span class="event-type">${ev.event_type}</span>` : ''}
+                        ${ev.date ? `<span class="event-date">📅 ${ev.date}</span>` : ''}
+                        ${ev.participants && ev.participants.length > 0 ? `<span class="event-participants">👥 ${ev.participants.join(', ')}</span>` : ''}
+                        ${ev.created ? '<span class="badge-created">✓ Criado</span>' : ''}
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+        }
+        
+        if (result.entities.length === 0 && result.relationships.length === 0 && result.events.length === 0) {
+            html += '<p class="empty-text">Nenhuma entidade, relacionamento ou evento encontrado no texto.</p>';
+        }
+        
+        html += '</div>';
+        resultsDiv.innerHTML = html;
+        
+        // Refresh dashboard if entities were created
+        if (autoCreate && result.stats.created_entities > 0) {
+            loadDashboard();
+        }
+        
+    } catch (error) {
+        console.error('Analysis error:', error);
+        resultsDiv.innerHTML = `
+            <div class="analyze-error">
+                <p>❌ Erro ao analisar texto</p>
+                <p class="error-detail">${error.message || 'Verifique se a API está configurada corretamente.'}</p>
+            </div>
+        `;
+    }
+}
+
 // ==========================================
 // Global Search
 // ==========================================

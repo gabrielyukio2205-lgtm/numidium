@@ -143,6 +143,7 @@
                 <button class="tab-btn active" onclick="switchIngestTab('wikipedia')">Wikipedia</button>
                 <button class="tab-btn" onclick="switchIngestTab('news')">Notícias</button>
                 <button class="tab-btn" onclick="switchIngestTab('manual')">Manual</button>
+                <button class="tab-btn" onclick="switchIngestTab('analyze')">🧠 Análise IA</button>
             </div>
 
             <!-- Wikipedia Tab -->
@@ -199,6 +200,28 @@
                     </div>
                     <button type="submit" class="btn-primary">CRIAR ENTIDADE</button>
                 </form>
+            </div>
+
+            <!-- AI Analysis Tab -->
+            <div id="ingest-analyze" class="ingest-panel">
+                <div class="analyze-intro">
+                    <p>🧠 <strong>Análise Inteligente com IA</strong> - Cole qualquer texto (notícia, documento, artigo)
+                        e o sistema irá extrair automaticamente entidades, relacionamentos e eventos usando IA avançada.
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Texto para Análise</label>
+                    <textarea id="analyze-text" rows="8"
+                        placeholder="Cole aqui o texto que deseja analisar..."></textarea>
+                </div>
+                <div class="analyze-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="analyze-auto-create" checked>
+                        Criar automaticamente entidades encontradas no banco de dados
+                    </label>
+                </div>
+                <button class="btn-primary" onclick="analyzeText()">🔍 ANALISAR TEXTO</button>
+                <div id="analyze-results" class="analyze-results"></div>
             </div>
         </main>
 
