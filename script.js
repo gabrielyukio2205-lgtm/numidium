@@ -520,12 +520,12 @@ async function createManualEntity(event) {
 async function analyzeText() {
     const text = document.getElementById('analyze-text').value;
     const autoCreate = document.getElementById('analyze-auto-create').checked;
-    
+
     if (!text || text.length < 10) {
         alert('Por favor, insira um texto com pelo menos 10 caracteres.');
         return;
     }
-    
+
     const resultsDiv = document.getElementById('analyze-results');
     resultsDiv.innerHTML = `
         <div class="analyze-loading">
@@ -534,7 +534,7 @@ async function analyzeText() {
             <p class="loading-sub">Isso pode levar alguns segundos</p>
         </div>
     `;
-    
+
     try {
         const result = await apiRequest('/analyze', {
             method: 'POST',
@@ -543,9 +543,14 @@ async function analyzeText() {
                 auto_create: autoCreate
             })
         });
-        
+
+        // Debug log
+        console.log('Analyze result:', result);
+        console.log('Entities:', result.entities);
+        console.log('Stats:', result.stats);
+
         let html = '<div class="analyze-results-content">';
-        
+
         // Stats summary
         html += `
             <div class="analyze-stats">
@@ -569,7 +574,7 @@ async function analyzeText() {
                 ` : ''}
             </div>
         `;
-        
+
         // Entities
         if (result.entities.length > 0) {
             html += '<div class="analyze-section"><h3>📋 Entidades Extraídas</h3><div class="entities-grid small">';
@@ -587,7 +592,7 @@ async function analyzeText() {
             });
             html += '</div></div>';
         }
-        
+
         // Relationships
         if (result.relationships.length > 0) {
             html += '<div class="analyze-section"><h3>🔗 Relacionamentos</h3><div class="relationships-list">';
@@ -605,7 +610,7 @@ async function analyzeText() {
             });
             html += '</div></div>';
         }
-        
+
         // Events
         if (result.events.length > 0) {
             html += '<div class="analyze-section"><h3>📅 Eventos</h3><div class="events-list">';
@@ -622,19 +627,19 @@ async function analyzeText() {
             });
             html += '</div></div>';
         }
-        
+
         if (result.entities.length === 0 && result.relationships.length === 0 && result.events.length === 0) {
             html += '<p class="empty-text">Nenhuma entidade, relacionamento ou evento encontrado no texto.</p>';
         }
-        
+
         html += '</div>';
         resultsDiv.innerHTML = html;
-        
+
         // Refresh dashboard if entities were created
         if (autoCreate && result.stats.created_entities > 0) {
             loadDashboard();
         }
-        
+
     } catch (error) {
         console.error('Analysis error:', error);
         resultsDiv.innerHTML = `
