@@ -186,6 +186,9 @@ function switchView(viewName) {
         case 'network':
             initNetworkGraph();
             break;
+        case 'research':
+            // Research view ready
+            break;
     }
 }
 
@@ -1272,6 +1275,97 @@ async function createRelationship() {
         console.error('Error creating relationship:', error);
         alert('❌ Erro ao criar conexão');
     }
+}
+
+// ==========================================
+// Research (Lancer Integration)
+// ==========================================
+
+async function executeResearch() {
+    const query = document.getElementById('research-query').value.trim();
+    const mode = document.getElementById('research-mode').value;
+    const autoExtract = document.getElementById('research-auto-extract').checked;
+
+    if (!query) {
+        alert('Digite uma pesquisa');
+        return;
+    }
+
+    const loading = document.getElementById('research-loading');
+    const results = document.getElementById('research-results');
+
+    loading.style.display = 'flex';
+    results.innerHTML = '';
+
+    try {
+        const response = await apiRequest('/research', {
+            method: 'POST',
+            body: JSON.stringify({
+                query: query,
+                mode: mode,
+                max_results: 10,
+                auto_extract: autoExtract
+            })
+        });
+
+        loading.style.display = 'none';
+
+        // Build results HTML
+        let html = `
+            <div class="research-answer">
+                <h3>📝 Resposta</h3>
+                <div class="answer-content">${formatResearchAnswer(response.answer)}</div>
+            </div>
+        `;
+
+        // Extraction stats
+        if (autoExtract) {
+            html += `
+                <div class="research-extraction-stats">
+                    <span>✅ ${response.extracted_entities} entidades extraídas</span>
+                    <span>🔗 ${response.extracted_relationships} relacionamentos criados</span>
+                    <span>⏱️ ${(response.processing_time_ms / 1000).toFixed(1)}s</span>
+                </div>
+            `;
+        }
+
+        // Sources
+        if (response.sources && response.sources.length > 0) {
+            html += `<div class="research-sources"><h3>📚 Fontes</h3><div class="sources-list">`;
+            response.sources.forEach((src, idx) => {
+                html += `
+                    <div class="source-item">
+                        <span class="source-index">[${idx + 1}]</span>
+                        <div class="source-content">
+                            <a href="${src.url}" target="_blank" class="source-title">${src.title}</a>
+                            <p class="source-snippet">${src.content}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+        }
+
+        results.innerHTML = html;
+
+    } catch (error) {
+        loading.style.display = 'none';
+        console.error('Research error:', error);
+        results.innerHTML = `<p class="error-text">❌ Erro na pesquisa: ${error.message || 'Falha na API'}</p>`;
+    }
+}
+
+function formatResearchAnswer(answer) {
+    if (!answer) return '<p class="empty-text">Nenhuma resposta gerada</p>';
+
+    // Basic markdown-ish formatting
+    return answer
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
 }
 
 // ==========================================

@@ -28,6 +28,7 @@
                 <a href="#" class="nav-link active" data-view="dashboard">DASHBOARD</a>
                 <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
+                <a href="#" class="nav-link" data-view="research">PESQUISAR</a>
                 <a href="#" class="nav-link" data-view="search">BUSCA</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
                 <a href="#" class="nav-link" data-view="network">REDE</a>
@@ -261,6 +262,42 @@
             <div id="map-container"></div>
             <div id="map-info" class="map-info-panel">
                 <p class="hint-text">Clique em um marcador para ver detalhes</p>
+            </div>
+        </main>
+
+        <!-- Research View -->
+        <main id="research-view" class="view">
+            <section class="view-header">
+                <h1>🔍 Deep Research</h1>
+                <p class="subtitle">Pesquisa avançada com IA e extração automática de entidades</p>
+            </section>
+
+            <div class="research-container">
+                <div class="research-input-section">
+                    <div class="research-search-box">
+                        <input type="text" id="research-query"
+                            placeholder="Digite sua pesquisa... (ex: Elon Musk negócios 2024)">
+                        <select id="research-mode">
+                            <option value="search">🔎 Busca Rápida</option>
+                            <option value="deep">🧠 Deep Research</option>
+                            <option value="heavy">📚 Busca Completa</option>
+                        </select>
+                        <button class="btn-primary" onclick="executeResearch()">PESQUISAR</button>
+                    </div>
+                    <div class="research-options">
+                        <label>
+                            <input type="checkbox" id="research-auto-extract" checked>
+                            Extrair entidades automaticamente
+                        </label>
+                    </div>
+                </div>
+
+                <div id="research-loading" class="research-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>🧠 Analisando com IA... isso pode demorar alguns segundos</p>
+                </div>
+
+                <div id="research-results" class="research-results"></div>
             </div>
         </main>
 
