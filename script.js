@@ -183,6 +183,9 @@ function switchView(viewName) {
         case 'map':
             initMap();
             break;
+        case 'network':
+            initNetworkGraph();
+            break;
     }
 }
 
@@ -843,6 +846,208 @@ async function loadMapData() {
         document.getElementById('map-info').innerHTML =
             '<p class="error-text">Erro ao carregar dados do mapa</p>';
     }
+}
+
+// ==========================================
+// Network Graph (Cytoscape.js)
+// ==========================================
+
+let cy = null;
+
+const NODE_COLORS = {
+    person: '#26C5ED',      // Cyan
+    organization: '#9B59B6', // Purple
+    location: '#2ECC71',     // Green
+    event: '#E74C3C',        // Red
+    unknown: '#95A5A6'       // Gray
+};
+
+function initNetworkGraph() {
+    if (cy) {
+        loadNetworkGraph();
+        return;
+    }
+
+    cy = cytoscape({
+        container: document.getElementById('cy-container'),
+        style: [
+            {
+                selector: 'node',
+                style: {
+                    'background-color': function (ele) {
+                        return NODE_COLORS[ele.data('type')] || NODE_COLORS.unknown;
+                    },
+                    'label': 'data(label)',
+                    'color': '#EBF1F5',
+                    'text-valign': 'bottom',
+                    'text-halign': 'center',
+                    'font-size': '10px',
+                    'font-family': 'Inter, sans-serif',
+                    'text-margin-y': 5,
+                    'width': 40,
+                    'height': 40,
+                    'border-width': 2,
+                    'border-color': '#2F363D'
+                }
+            },
+            {
+                selector: 'node:selected',
+                style: {
+                    'border-width': 4,
+                    'border-color': '#26C5ED',
+                    'background-color': '#26C5ED'
+                }
+            },
+            {
+                selector: 'node[?isCentral]',
+                style: {
+                    'width': 60,
+                    'height': 60,
+                    'border-width': 4,
+                    'border-color': '#F1C40F'
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                    'width': 2,
+                    'line-color': 'rgba(38, 197, 237, 0.4)',
+                    'target-arrow-color': 'rgba(38, 197, 237, 0.6)',
+                    'target-arrow-shape': 'triangle',
+                    'curve-style': 'bezier',
+                    'label': 'data(label)',
+                    'font-size': '8px',
+                    'color': '#8F9CA3',
+                    'text-rotation': 'autorotate',
+                    'text-margin-y': -10
+                }
+            },
+            {
+                selector: 'edge:selected',
+                style: {
+                    'width': 4,
+                    'line-color': '#26C5ED',
+                    'target-arrow-color': '#26C5ED'
+                }
+            }
+        ],
+        layout: {
+            name: 'cose',
+            animate: true,
+            animationDuration: 500
+        },
+        minZoom: 0.2,
+        maxZoom: 3
+    });
+
+    // Node click handler
+    cy.on('tap', 'node', function (evt) {
+        const node = evt.target;
+        const data = node.data();
+
+        document.getElementById('network-selected').innerHTML = `
+            <div class="selected-entity">
+                <span class="entity-type-badge ${data.type}">${getTypeIcon(data.type)} ${data.type.toUpperCase()}</span>
+                <h3>${data.fullName}</h3>
+                <p>${data.description || 'Sem descrição'}</p>
+                <small>Fonte: ${data.source}</small>
+                <button class="btn-primary" onclick="showEntityDetail('${data.id}')" style="margin-top: 1rem;">VER DETALHES</button>
+            </div>
+        `;
+    });
+
+    // Edge click handler
+    cy.on('tap', 'edge', function (evt) {
+        const edge = evt.target;
+        const data = edge.data();
+        const sourceNode = cy.getElementById(data.source).data();
+        const targetNode = cy.getElementById(data.target).data();
+
+        document.getElementById('network-selected').innerHTML = `
+            <div class="selected-relationship">
+                <h4>🔗 Relacionamento</h4>
+                <p><strong>${sourceNode?.fullName || 'Desconhecido'}</strong></p>
+                <p class="rel-type">${data.label}</p>
+                <p><strong>${targetNode?.fullName || 'Desconhecido'}</strong></p>
+            </div>
+        `;
+    });
+
+    // Background click handler
+    cy.on('tap', function (evt) {
+        if (evt.target === cy) {
+            document.getElementById('network-selected').innerHTML = `
+                <p class="hint-text">Clique em um nó para ver detalhes</p>
+            `;
+        }
+    });
+
+    loadNetworkGraph();
+}
+
+async function loadNetworkGraph() {
+    if (!cy) return;
+
+    const entityType = document.getElementById('network-type-filter')?.value || '';
+
+    try {
+        let endpoint = '/graph';
+        if (entityType) {
+            endpoint += `?entity_type=${entityType}`;
+        }
+
+        const data = await apiRequest(endpoint);
+
+        // Clear existing elements
+        cy.elements().remove();
+
+        // Add new elements
+        cy.add(data.nodes);
+        cy.add(data.edges);
+
+        // Apply layout
+        const layoutName = document.getElementById('network-layout')?.value || 'cose';
+        cy.layout({
+            name: layoutName,
+            animate: true,
+            animationDuration: 500,
+            nodeSpacing: 50,
+            padding: 50
+        }).run();
+
+        // Update stats
+        document.getElementById('network-node-count').textContent = `${data.stats.total_nodes} nós`;
+        document.getElementById('network-edge-count').textContent = `${data.stats.total_edges} conexões`;
+
+        // Fit to view
+        setTimeout(() => {
+            cy.fit(50);
+        }, 600);
+
+    } catch (error) {
+        console.error('Failed to load network graph:', error);
+        document.getElementById('network-selected').innerHTML = `
+            <p class="error-text">Erro ao carregar grafo</p>
+        `;
+    }
+}
+
+function changeNetworkLayout() {
+    if (!cy) return;
+
+    const layoutName = document.getElementById('network-layout').value;
+
+    cy.layout({
+        name: layoutName,
+        animate: true,
+        animationDuration: 500,
+        nodeSpacing: 50,
+        padding: 50
+    }).run();
+
+    setTimeout(() => {
+        cy.fit(50);
+    }, 600);
 }
 
 // ==========================================

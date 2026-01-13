@@ -30,6 +30,7 @@
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="search">BUSCA</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
+                <a href="#" class="nav-link" data-view="network">REDE</a>
             </nav>
             <div class="api-status">
                 <span class="status-dot"></span>
@@ -260,6 +261,38 @@
             </div>
         </main>
 
+        <!-- Network View -->
+        <main id="network-view" class="view">
+            <section class="view-header">
+                <h1>Rede de Conexões</h1>
+                <div class="network-controls">
+                    <select id="network-type-filter" onchange="loadNetworkGraph()">
+                        <option value="">Todos os Tipos</option>
+                        <option value="person">Pessoas</option>
+                        <option value="organization">Organizações</option>
+                        <option value="location">Locais</option>
+                    </select>
+                    <select id="network-layout" onchange="changeNetworkLayout()">
+                        <option value="cose">Layout Orgânico</option>
+                        <option value="circle">Círculo</option>
+                        <option value="grid">Grade</option>
+                        <option value="breadthfirst">Hierárquico</option>
+                    </select>
+                    <button class="btn-primary" onclick="loadNetworkGraph()">🔄 RECARREGAR</button>
+                </div>
+            </section>
+            <div id="cy-container"></div>
+            <div id="network-info" class="network-info-panel">
+                <div class="network-stats">
+                    <span id="network-node-count">0 nós</span>
+                    <span id="network-edge-count">0 conexões</span>
+                </div>
+                <div id="network-selected" class="network-selected">
+                    <p class="hint-text">Clique em um nó para ver detalhes</p>
+                </div>
+            </div>
+        </main>
+
         <!-- Entity Detail Modal -->
         <div id="entity-modal" class="modal">
             <div class="modal-content">
@@ -277,6 +310,8 @@
     </div>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Cytoscape.js for network graphs -->
+    <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
     <script src="script.js"></script>
 </body>
 
