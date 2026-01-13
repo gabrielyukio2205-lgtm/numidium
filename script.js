@@ -335,6 +335,7 @@ async function showEntityDetail(id) {
                 </div>
                 
                 <div class="entity-actions">
+                    <button class="btn-primary" onclick="researchEntity('${entity.name}', '${entity.type}')">🔍 Pesquisar mais</button>
                     <button class="btn-secondary" onclick="deleteEntity('${id}')">🗑️ Excluir</button>
                 </div>
             </div>
@@ -1366,6 +1367,21 @@ function formatResearchAnswer(answer) {
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/^/, '<p>')
         .replace(/$/, '</p>');
+}
+
+// Research entity from modal
+async function researchEntity(name, type) {
+    closeModal();
+    switchView('research');
+
+    // Set the query and execute
+    document.getElementById('research-query').value = `${name} ${type === 'person' ? 'biografia' : type === 'organization' ? 'empresa' : 'informações'}`;
+    document.getElementById('research-mode').value = 'search';
+
+    // Small delay to allow view switch
+    setTimeout(() => {
+        executeResearch();
+    }, 100);
 }
 
 // ==========================================
