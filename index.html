@@ -115,7 +115,10 @@
         <main id="entities-view" class="view">
             <section class="view-header">
                 <h1>Entidades</h1>
-                <button class="btn-primary" onclick="showAddEntityModal()">+ NOVA ENTIDADE</button>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="showMergeModal()">🔗 MESCLAR DUPLICATAS</button>
+                    <button class="btn-primary" onclick="showAddEntityModal()">+ NOVA ENTIDADE</button>
+                </div>
             </section>
 
             <div class="filter-bar">
@@ -298,6 +301,46 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="closeModal()">&times;</button>
                 <div id="entity-modal-body"></div>
+            </div>
+        </div>
+
+        <!-- Merge Modal -->
+        <div id="merge-modal" class="modal">
+            <div class="modal-content modal-large">
+                <button class="modal-close" onclick="closeMergeModal()">&times;</button>
+                <div class="merge-modal-body">
+                    <h2>🔗 Mesclar Entidades Duplicadas</h2>
+
+                    <div class="merge-suggestions">
+                        <h3>Sugestões da IA</h3>
+                        <button class="btn-secondary" onclick="loadMergeSuggestions()">🧠 Buscar Duplicatas</button>
+                        <div id="merge-suggestions-list" class="merge-suggestions-list">
+                            <p class="hint-text">Clique no botão para a IA analisar entidades duplicadas</p>
+                        </div>
+                    </div>
+
+                    <div class="merge-manual">
+                        <h3>Merge Manual</h3>
+                        <div class="merge-selectors">
+                            <div class="merge-select-group">
+                                <label>Entidade Principal (será mantida)</label>
+                                <select id="merge-primary" onchange="updateMergePreview()">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="merge-arrow">→</div>
+                            <div class="merge-select-group">
+                                <label>Entidade Secundária (será mesclada)</label>
+                                <select id="merge-secondary" onchange="updateMergePreview()">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="merge-preview" class="merge-preview"></div>
+                        <button id="merge-btn" class="btn-primary" onclick="executeMerge()" disabled>MESCLAR
+                            ENTIDADES</button>
+                    </div>
+                </div>
             </div>
         </div>
 

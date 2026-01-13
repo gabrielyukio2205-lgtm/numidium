@@ -1051,6 +1051,157 @@ function changeNetworkLayout() {
 }
 
 // ==========================================
+// Entity Merge
+// ==========================================
+
+let allEntitiesForMerge = [];
+
+async function showMergeModal() {
+    document.getElementById('merge-modal').classList.add('active');
+
+    // Load all entities for the dropdowns
+    try {
+        const entities = await apiRequest('/entities?limit=200');
+        allEntitiesForMerge = entities;
+
+        const primarySelect = document.getElementById('merge-primary');
+        const secondarySelect = document.getElementById('merge-secondary');
+
+        let options = '<option value="">Selecione...</option>';
+        entities.forEach(e => {
+            options += `<option value="${e.id}">${e.name} (${e.type})</option>`;
+        });
+
+        primarySelect.innerHTML = options;
+        secondarySelect.innerHTML = options;
+
+    } catch (error) {
+        console.error('Error loading entities for merge:', error);
+    }
+}
+
+function closeMergeModal() {
+    document.getElementById('merge-modal').classList.remove('active');
+}
+
+async function loadMergeSuggestions() {
+    const container = document.getElementById('merge-suggestions-list');
+    container.innerHTML = `
+        <div class="analyze-loading">
+            <div class="loading-spinner"></div>
+            <p>🧠 Analisando entidades com IA...</p>
+        </div>
+    `;
+
+    try {
+        const result = await apiRequest('/entities/suggest-merge');
+
+        if (result.candidates && result.candidates.length > 0) {
+            let html = '';
+            result.candidates.forEach(c => {
+                html += `
+                    <div class="merge-suggestion-item" onclick="selectMergeCandidate('${c.entity1.id}', '${c.entity2.id}')">
+                        <div class="merge-pair">
+                            <span class="entity-name">${c.entity1.name}</span>
+                            <span class="merge-vs">≈</span>
+                            <span class="entity-name">${c.entity2.name}</span>
+                        </div>
+                        <div class="merge-reason">
+                            <span class="confidence">${Math.round(c.confidence * 100)}%</span>
+                            ${c.reason}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p class="hint-text">✅ Nenhuma duplicata encontrada pela IA</p>';
+        }
+
+    } catch (error) {
+        console.error('Error loading suggestions:', error);
+        container.innerHTML = '<p class="error-text">Erro ao buscar sugestões</p>';
+    }
+}
+
+function selectMergeCandidate(id1, id2) {
+    document.getElementById('merge-primary').value = id1;
+    document.getElementById('merge-secondary').value = id2;
+    updateMergePreview();
+}
+
+function updateMergePreview() {
+    const primaryId = document.getElementById('merge-primary').value;
+    const secondaryId = document.getElementById('merge-secondary').value;
+    const previewDiv = document.getElementById('merge-preview');
+    const mergeBtn = document.getElementById('merge-btn');
+
+    if (!primaryId || !secondaryId) {
+        previewDiv.innerHTML = '';
+        mergeBtn.disabled = true;
+        return;
+    }
+
+    if (primaryId === secondaryId) {
+        previewDiv.innerHTML = '<p class="error-text">Selecione duas entidades diferentes</p>';
+        mergeBtn.disabled = true;
+        return;
+    }
+
+    const primary = allEntitiesForMerge.find(e => e.id === primaryId);
+    const secondary = allEntitiesForMerge.find(e => e.id === secondaryId);
+
+    if (primary && secondary) {
+        previewDiv.innerHTML = `
+            <div class="merge-preview-content">
+                <p><strong>"${secondary.name}"</strong> será mesclada em <strong>"${primary.name}"</strong></p>
+                <ul>
+                    <li>O nome "${secondary.name}" será adicionado como alias</li>
+                    <li>Relacionamentos serão transferidos</li>
+                    <li>A entidade secundária será deletada</li>
+                </ul>
+            </div>
+        `;
+        mergeBtn.disabled = false;
+    }
+}
+
+async function executeMerge() {
+    const primaryId = document.getElementById('merge-primary').value;
+    const secondaryId = document.getElementById('merge-secondary').value;
+
+    if (!primaryId || !secondaryId || primaryId === secondaryId) {
+        return;
+    }
+
+    const primary = allEntitiesForMerge.find(e => e.id === primaryId);
+    const secondary = allEntitiesForMerge.find(e => e.id === secondaryId);
+
+    if (!confirm(`Confirma mesclar "${secondary?.name}" em "${primary?.name}"? Esta ação não pode ser desfeita.`)) {
+        return;
+    }
+
+    try {
+        const result = await apiRequest(`/entities/merge?primary_id=${primaryId}&secondary_id=${secondaryId}`, {
+            method: 'POST'
+        });
+
+        alert(`✅ ${result.message}`);
+        closeMergeModal();
+        loadEntities();
+
+        // Reload graph if visible
+        if (cy) {
+            loadNetworkGraph();
+        }
+
+    } catch (error) {
+        console.error('Merge error:', error);
+        alert('❌ Erro ao mesclar entidades');
+    }
+}
+
+// ==========================================
 // Initialize
 // ==========================================
 
