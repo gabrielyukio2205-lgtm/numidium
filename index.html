@@ -281,6 +281,7 @@
                         <option value="grid">Grade</option>
                         <option value="breadthfirst">Hierárquico</option>
                     </select>
+                    <button class="btn-secondary" onclick="showAddRelationshipModal()">🔗 + CONEXÃO</button>
                     <button class="btn-primary" onclick="loadNetworkGraph()">🔄 RECARREGAR</button>
                 </div>
             </section>
@@ -339,6 +340,43 @@
                         <div id="merge-preview" class="merge-preview"></div>
                         <button id="merge-btn" class="btn-primary" onclick="executeMerge()" disabled>MESCLAR
                             ENTIDADES</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Relationship Modal -->
+        <div id="relationship-modal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeRelationshipModal()">&times;</button>
+                <div class="relationship-modal-body">
+                    <h2>🔗 Nova Conexão</h2>
+                    <div class="relationship-form">
+                        <div class="form-group">
+                            <label>Entidade Origem</label>
+                            <select id="rel-source">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="relationship-type-input">
+                            <label>Tipo de Relação</label>
+                            <input type="text" id="rel-type" placeholder="ex: trabalha em, conhece, fundou...">
+                            <div class="type-suggestions">
+                                <span onclick="setRelType('trabalha em')">trabalha em</span>
+                                <span onclick="setRelType('conhece')">conhece</span>
+                                <span onclick="setRelType('fundou')">fundou</span>
+                                <span onclick="setRelType('casado com')">casado com</span>
+                                <span onclick="setRelType('localizado em')">localizado em</span>
+                                <span onclick="setRelType('membro de')">membro de</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Entidade Destino</label>
+                            <select id="rel-target">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" onclick="createRelationship()">CRIAR CONEXÃO</button>
                     </div>
                 </div>
             </div>

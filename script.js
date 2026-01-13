@@ -1202,6 +1202,79 @@ async function executeMerge() {
 }
 
 // ==========================================
+// Relationship Creation
+// ==========================================
+
+async function showAddRelationshipModal() {
+    document.getElementById('relationship-modal').classList.add('active');
+
+    // Load entities for dropdowns
+    try {
+        const entities = await apiRequest('/entities?limit=200');
+
+        let options = '<option value="">Selecione...</option>';
+        entities.forEach(e => {
+            options += `<option value="${e.id}">${e.name} (${e.type})</option>`;
+        });
+
+        document.getElementById('rel-source').innerHTML = options;
+        document.getElementById('rel-target').innerHTML = options;
+        document.getElementById('rel-type').value = '';
+
+    } catch (error) {
+        console.error('Error loading entities:', error);
+    }
+}
+
+function closeRelationshipModal() {
+    document.getElementById('relationship-modal').classList.remove('active');
+}
+
+function setRelType(type) {
+    document.getElementById('rel-type').value = type;
+}
+
+async function createRelationship() {
+    const sourceId = document.getElementById('rel-source').value;
+    const targetId = document.getElementById('rel-target').value;
+    const relType = document.getElementById('rel-type').value.trim();
+
+    if (!sourceId || !targetId) {
+        alert('Selecione as duas entidades');
+        return;
+    }
+
+    if (!relType) {
+        alert('Digite o tipo de relação');
+        return;
+    }
+
+    if (sourceId === targetId) {
+        alert('Selecione entidades diferentes');
+        return;
+    }
+
+    try {
+        await apiRequest('/relationships/', {
+            method: 'POST',
+            body: JSON.stringify({
+                source_id: sourceId,
+                target_id: targetId,
+                type: relType
+            })
+        });
+
+        alert('✅ Conexão criada!');
+        closeRelationshipModal();
+        loadNetworkGraph();
+
+    } catch (error) {
+        console.error('Error creating relationship:', error);
+        alert('❌ Erro ao criar conexão');
+    }
+}
+
+// ==========================================
 // Initialize
 // ==========================================
 

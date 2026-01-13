@@ -1510,3 +1510,65 @@ footer {
         gap: 0.5rem;
     }
 }
+
+/* Relationship Modal Styles */
+.relationship-modal-body {
+    padding: 2rem;
+}
+
+.relationship-modal-body h2 {
+    margin-bottom: 1.5rem;
+}
+
+.relationship-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.relationship-form .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.relationship-form select,
+.relationship-form input {
+    width: 100%;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.relationship-type-input label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.type-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.type-suggestions span {
+    background: var(--accent-dark);
+    color: var(--accent-blue);
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.type-suggestions span:hover {
+    background: var(--accent-blue);
+    color: var(--bg-color);
+}
