@@ -195,6 +195,9 @@ function switchView(viewName) {
         case 'investigate':
             // Investigation view ready
             break;
+        case 'timeline':
+            loadTimeline();
+            break;
     }
 }
 
@@ -1695,6 +1698,106 @@ function renderSectionContent(key, content) {
     }
 
     return `<pre>${JSON.stringify(content, null, 2)}</pre>`;
+}
+
+// ==========================================
+// Timeline
+// ==========================================
+
+async function loadTimeline() {
+    const container = document.getElementById('timeline-container');
+    const totalEl = document.getElementById('timeline-total');
+
+    const days = document.getElementById('timeline-days')?.value || 30;
+    const entityType = document.getElementById('timeline-type')?.value || '';
+
+    container.innerHTML = `
+        <div class="timeline-loading">
+            <div class="loading-spinner"></div>
+            <p>Carregando timeline...</p>
+        </div>
+    `;
+
+    try {
+        let url = `/timeline?days=${days}&limit=100`;
+        if (entityType) {
+            url += `&entity_type=${entityType}`;
+        }
+
+        const data = await apiRequest(url);
+
+        if (!data.groups || data.groups.length === 0) {
+            container.innerHTML = `
+                <div class="timeline-empty">
+                    <span class="empty-icon">📅</span>
+                    <h3>Nenhum evento encontrado</h3>
+                    <p>Não há entidades ou conexões criadas no período selecionado.</p>
+                </div>
+            `;
+            totalEl.textContent = '0 eventos';
+            return;
+        }
+
+        totalEl.textContent = `${data.total_events} eventos`;
+        container.innerHTML = renderTimeline(data.groups);
+
+    } catch (error) {
+        console.error('Timeline error:', error);
+        container.innerHTML = `
+            <div class="timeline-empty error">
+                <span class="empty-icon">⚠️</span>
+                <h3>Erro ao carregar timeline</h3>
+                <p>${error.message || 'Tente novamente'}</p>
+            </div>
+        `;
+    }
+}
+
+function renderTimeline(groups) {
+    let html = '<div class="timeline-track">';
+
+    groups.forEach((group, groupIndex) => {
+        html += `
+            <div class="timeline-group" style="--delay: ${groupIndex * 0.1}s">
+                <div class="timeline-date">
+                    <span class="date-label">${group.label}</span>
+                    <span class="event-count">${group.events.length} evento(s)</span>
+                </div>
+                <div class="timeline-events">
+        `;
+
+        group.events.forEach((event, eventIndex) => {
+            const typeClass = event.entity_type || event.type;
+            html += `
+                <div class="timeline-event ${typeClass}" style="--event-delay: ${eventIndex * 0.05}s" onclick="viewTimelineEvent('${event.type}', ${event.id})">
+                    <div class="event-icon">${event.icon}</div>
+                    <div class="event-content">
+                        <h4>${event.name}</h4>
+                        ${event.description ? `<p>${event.description}</p>` : ''}
+                        <span class="event-type">${event.entity_type || event.type}</span>
+                    </div>
+                    <div class="event-time">
+                        ${new Date(event.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+    return html;
+}
+
+function viewTimelineEvent(type, id) {
+    if (type === 'entity') {
+        openEntityModal(id);
+    }
+    // For relationships, could open a relationship detail view
 }
 
 // ==========================================

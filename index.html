@@ -27,11 +27,11 @@
             <nav>
                 <a href="#" class="nav-link active" data-view="dashboard">DASHBOARD</a>
                 <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
+                <a href="#" class="nav-link" data-view="timeline">📅 TIMELINE</a>
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="research">PESQUISAR</a>
                 <a href="#" class="nav-link" data-view="investigate">🕵️ DOSSIÊ</a>
                 <a href="#" class="nav-link" data-view="chat">💬 CHAT</a>
-                <a href="#" class="nav-link" data-view="search">BUSCA</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
                 <a href="#" class="nav-link" data-view="network">REDE</a>
             </nav>
@@ -342,6 +342,42 @@
                 </div>
 
                 <div id="inv-result" class="inv-result"></div>
+            </div>
+        </main>
+
+        <!-- Timeline View -->
+        <main id="timeline-view" class="view">
+            <section class="view-header">
+                <h1>📅 Timeline</h1>
+                <p class="subtitle">Visualização temporal de entidades e conexões</p>
+            </section>
+
+            <div class="timeline-controls">
+                <div class="timeline-filters">
+                    <select id="timeline-days" onchange="loadTimeline()">
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30" selected>Últimos 30 dias</option>
+                        <option value="90">Últimos 90 dias</option>
+                        <option value="365">Último ano</option>
+                    </select>
+                    <select id="timeline-type" onchange="loadTimeline()">
+                        <option value="">Todos os tipos</option>
+                        <option value="person">👤 Pessoas</option>
+                        <option value="organization">🏢 Organizações</option>
+                        <option value="location">📍 Locais</option>
+                        <option value="event">📅 Eventos</option>
+                    </select>
+                </div>
+                <div class="timeline-stats">
+                    <span id="timeline-total">0 eventos</span>
+                </div>
+            </div>
+
+            <div id="timeline-container" class="timeline-container">
+                <div class="timeline-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando timeline...</p>
+                </div>
             </div>
         </main>
 

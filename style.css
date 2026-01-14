@@ -2336,3 +2336,254 @@ footer .version {
     background: rgba(0, 212, 255, 0.3);
     color: var(--text-primary);
 }
+
+/* ==========================================
+   Timeline Styles - Gotham Inspired
+   ========================================== */
+
+.timeline-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.timeline-filters {
+    display: flex;
+    gap: 1rem;
+}
+
+.timeline-filters select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.timeline-filters select:hover {
+    border-color: var(--accent-primary);
+}
+
+.timeline-filters select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+}
+
+.timeline-stats {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-primary);
+}
+
+.timeline-container {
+    min-height: 400px;
+}
+
+.timeline-loading,
+.timeline-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+    color: var(--text-secondary);
+}
+
+.timeline-empty .empty-icon {
+    font-size: 3rem;
+}
+
+.timeline-empty h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.timeline-empty.error .empty-icon {
+    color: var(--error);
+}
+
+/* Timeline Track */
+.timeline-track {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-track::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+}
+
+/* Timeline Groups */
+.timeline-group {
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.5s ease forwards;
+    animation-delay: var(--delay, 0s);
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.timeline-date {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.timeline-date::before {
+    content: '';
+    position: absolute;
+    left: -2.35rem;
+    width: 14px;
+    height: 14px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    box-shadow: var(--accent-glow);
+}
+
+.date-label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.event-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+/* Timeline Events */
+.timeline-events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-left: 1rem;
+}
+
+.timeline-event {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    animation: fadeInUp 0.3s ease forwards;
+    animation-delay: var(--event-delay, 0s);
+    opacity: 0;
+}
+
+.timeline-event:hover {
+    border-color: var(--border-glow);
+    transform: translateX(8px);
+    box-shadow: var(--shadow-sm), var(--accent-glow);
+}
+
+.event-icon {
+    font-size: 1.5rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+/* Type-based colors */
+.timeline-event.person .event-icon {
+    background: rgba(59, 130, 246, 0.15);
+}
+
+.timeline-event.organization .event-icon {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+.timeline-event.location .event-icon {
+    background: rgba(245, 158, 11, 0.15);
+}
+
+.timeline-event.event .event-icon {
+    background: rgba(124, 58, 237, 0.15);
+}
+
+.timeline-event.relationship .event-icon {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.event-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.event-content p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.event-type {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-primary);
+    background: rgba(0, 212, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+.event-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
