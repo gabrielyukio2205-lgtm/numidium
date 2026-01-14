@@ -189,6 +189,9 @@ function switchView(viewName) {
         case 'research':
             // Research view ready
             break;
+        case 'chat':
+            // Chat view ready
+            break;
     }
 }
 
@@ -1382,6 +1385,102 @@ async function researchEntity(name, type) {
     setTimeout(() => {
         executeResearch();
     }, 100);
+}
+
+// ==========================================
+// Chat (AVANGARD)
+// ==========================================
+
+async function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const useWeb = document.getElementById('chat-use-web').checked;
+    const messagesContainer = document.getElementById('chat-messages');
+
+    // Add user message
+    messagesContainer.innerHTML += `
+        <div class="chat-message user">
+            <div class="message-content"><p>${message}</p></div>
+            <div class="message-avatar">👤</div>
+        </div>
+    `;
+
+    input.value = '';
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Add loading indicator
+    const loadingId = 'loading-' + Date.now();
+    messagesContainer.innerHTML += `
+        <div class="chat-message assistant" id="${loadingId}">
+            <div class="message-avatar">🛡️</div>
+            <div class="message-content"><p class="typing">Pensando...</p></div>
+        </div>
+    `;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    try {
+        const response = await apiRequest('/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+                message: message,
+                use_web: useWeb,
+                use_history: true
+            })
+        });
+
+        // Replace loading with response
+        const loadingEl = document.getElementById(loadingId);
+        loadingEl.innerHTML = `
+            <div class="message-avatar">🛡️</div>
+            <div class="message-content">
+                ${formatChatResponse(response.answer)}
+                <div class="message-meta">
+                    ${response.local_context_used ? '📊 ' + response.entities_found + ' entidades' : ''} 
+                    ${response.web_context_used ? '🌐 Web' : ''}
+                </div>
+            </div>
+        `;
+
+    } catch (error) {
+        const loadingEl = document.getElementById(loadingId);
+        loadingEl.innerHTML = `
+            <div class="message-avatar">🛡️</div>
+            <div class="message-content error">
+                <p>❌ Erro: ${error.message || 'Falha na comunicação'}</p>
+            </div>
+        `;
+    }
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function formatChatResponse(text) {
+    if (!text) return '<p>Sem resposta</p>';
+    return text
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+}
+
+async function clearChatHistory() {
+    try {
+        await apiRequest('/chat/clear', { method: 'POST' });
+        document.getElementById('chat-messages').innerHTML = `
+            <div class="chat-message assistant">
+                <div class="message-avatar">🛡️</div>
+                <div class="message-content">
+                    <p>Histórico limpo! Como posso ajudar?</p>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        alert('Erro ao limpar histórico');
+    }
 }
 
 // ==========================================

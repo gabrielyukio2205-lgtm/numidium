@@ -29,6 +29,7 @@
                 <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="research">PESQUISAR</a>
+                <a href="#" class="nav-link" data-view="chat">💬 CHAT</a>
                 <a href="#" class="nav-link" data-view="search">BUSCA</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
                 <a href="#" class="nav-link" data-view="network">REDE</a>
@@ -298,6 +299,43 @@
                 </div>
 
                 <div id="research-results" class="research-results"></div>
+            </div>
+        </main>
+
+        <!-- Chat View -->
+        <main id="chat-view" class="view">
+            <section class="view-header">
+                <h1>💬 AVANGARD Chat</h1>
+                <p class="subtitle">Assistente inteligente com acesso ao grafo de conhecimento</p>
+            </section>
+
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <div class="chat-message assistant">
+                        <div class="message-avatar">🛡️</div>
+                        <div class="message-content">
+                            <p>Olá! Sou o AVANGARD, seu assistente de inteligência.</p>
+                            <p>Posso responder perguntas usando o conhecimento do NUMIDIUM e pesquisar na web quando
+                                necessário.</p>
+                            <p>Como posso ajudar?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="chat-options">
+                        <label>
+                            <input type="checkbox" id="chat-use-web" checked>
+                            🌐 Incluir pesquisa web
+                        </label>
+                        <button class="btn-text" onclick="clearChatHistory()">🗑️ Limpar histórico</button>
+                    </div>
+                    <div class="chat-input-box">
+                        <input type="text" id="chat-input" placeholder="Digite sua pergunta..."
+                            onkeypress="if(event.key==='Enter') sendChatMessage()">
+                        <button class="btn-primary" onclick="sendChatMessage()">Enviar</button>
+                    </div>
+                </div>
             </div>
         </main>
 
