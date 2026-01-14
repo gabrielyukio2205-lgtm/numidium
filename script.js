@@ -192,6 +192,9 @@ function switchView(viewName) {
         case 'chat':
             // Chat view ready
             break;
+        case 'investigate':
+            // Investigation view ready
+            break;
     }
 }
 
@@ -1481,6 +1484,184 @@ async function clearChatHistory() {
     } catch (error) {
         alert('Erro ao limpar histórico');
     }
+}
+
+// ==========================================
+// Investigation (Dossier)
+// ==========================================
+
+function switchInvTab(tab) {
+    document.querySelectorAll('.inv-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.inv-panel').forEach(p => p.classList.remove('active'));
+
+    event.target.classList.add('active');
+    document.getElementById(`inv-${tab}`).classList.add('active');
+}
+
+async function investigateCompany() {
+    const cnpj = document.getElementById('inv-cnpj').value.trim();
+    if (!cnpj) {
+        alert('Digite o CNPJ');
+        return;
+    }
+
+    await runInvestigation('/investigate/company', { cnpj });
+}
+
+async function investigatePerson() {
+    const nome = document.getElementById('inv-nome').value.trim();
+    const cpf = document.getElementById('inv-cpf').value.trim();
+
+    if (!nome) {
+        alert('Digite o nome');
+        return;
+    }
+
+    await runInvestigation('/investigate/person', { nome, cpf: cpf || null });
+}
+
+async function runInvestigation(endpoint, data) {
+    const loading = document.getElementById('inv-loading');
+    const result = document.getElementById('inv-result');
+
+    loading.style.display = 'flex';
+    result.innerHTML = '';
+
+    try {
+        const dossier = await apiRequest(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+
+        loading.style.display = 'none';
+        result.innerHTML = renderDossier(dossier);
+
+    } catch (error) {
+        loading.style.display = 'none';
+        result.innerHTML = `<p class="error-text">❌ Erro: ${error.message || 'Falha na investigação'}</p>`;
+    }
+}
+
+function renderDossier(d) {
+    const riskClass = d.score_risco >= 50 ? 'danger' : d.score_risco >= 20 ? 'warning' : 'ok';
+
+    let html = `
+        <div class="dossier">
+            <div class="dossier-header">
+                <div class="dossier-title">
+                    <h2>${d.tipo === 'organization' ? '🏢' : '👤'} ${d.alvo}</h2>
+                    ${d.cnpj_cpf ? `<span class="dossier-id">${d.cnpj_cpf}</span>` : ''}
+                </div>
+                <div class="risk-score ${riskClass}">
+                    <span>Score de Risco</span>
+                    <strong>${d.score_risco}</strong>
+                </div>
+            </div>
+    `;
+
+    // Red flags
+    if (d.red_flags && d.red_flags.length > 0) {
+        html += `<div class="red-flags">`;
+        d.red_flags.forEach(flag => {
+            html += `<div class="flag-item">${flag}</div>`;
+        });
+        html += `</div>`;
+    }
+
+    // Sections
+    for (const [key, section] of Object.entries(d.secoes || {})) {
+        html += `
+            <div class="dossier-section ${section.status}">
+                <h3>${section.icone} ${section.titulo}</h3>
+                <div class="section-content">
+                    ${renderSectionContent(key, section.conteudo)}
+                </div>
+            </div>
+        `;
+    }
+
+    // Sources
+    if (d.fonte_dados && d.fonte_dados.length > 0) {
+        html += `
+            <div class="dossier-sources">
+                <span>Fontes: ${d.fonte_dados.join(', ')}</span>
+                <span>Gerado em: ${new Date(d.data_geracao).toLocaleString('pt-BR')}</span>
+            </div>
+        `;
+    }
+
+    html += `</div>`;
+    return html;
+}
+
+function renderSectionContent(key, content) {
+    if (!content) return '<p>Sem dados</p>';
+
+    if (key === 'dados_cadastrais') {
+        return `
+            <div class="cadastral-grid">
+                ${Object.entries(content).map(([k, v]) =>
+            `<div class="cad-item"><span>${k.replace(/_/g, ' ')}</span><strong>${v || '-'}</strong></div>`
+        ).join('')}
+            </div>
+        `;
+    }
+
+    if (key === 'socios' && Array.isArray(content)) {
+        return `
+            <div class="partners-list">
+                ${content.map(s => `
+                    <div class="partner-item">
+                        <span class="partner-name">${s.nome}</span>
+                        <span class="partner-role">${s.qualificacao}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    if (key === 'sancoes' && content.registros) {
+        if (content.registros.length === 0) {
+            return `<p class="ok-text">✅ ${content.mensagem || 'Nenhuma sanção encontrada'}</p>`;
+        }
+        return `
+            <div class="sanctions-list">
+                ${content.registros.map(s => `
+                    <div class="sanction-item">
+                        <span class="sanction-type">${s.tipo}</span>
+                        <span>${s.tipo_sancao}</span>
+                        <span>${s.orgao}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    if (key === 'noticias' && content.resumo) {
+        let html = `<div class="news-summary">${content.resumo}</div>`;
+        if (content.fontes && content.fontes.length > 0) {
+            html += `<div class="news-sources">`;
+            content.fontes.forEach((f, i) => {
+                html += `<a href="${f.url}" target="_blank">[${i + 1}] ${f.titulo}</a>`;
+            });
+            html += `</div>`;
+        }
+        return html;
+    }
+
+    if (key === 'entidades_relacionadas' && Array.isArray(content)) {
+        return `
+            <div class="entities-list">
+                ${content.map(e => `
+                    <div class="entity-tag ${e.tipo}">
+                        ${e.nome} <small>(${e.tipo})</small>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    return `<pre>${JSON.stringify(content, null, 2)}</pre>`;
 }
 
 // ==========================================

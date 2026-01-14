@@ -29,6 +29,7 @@
                 <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="research">PESQUISAR</a>
+                <a href="#" class="nav-link" data-view="investigate">🕵️ DOSSIÊ</a>
                 <a href="#" class="nav-link" data-view="chat">💬 CHAT</a>
                 <a href="#" class="nav-link" data-view="search">BUSCA</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
@@ -299,6 +300,48 @@
                 </div>
 
                 <div id="research-results" class="research-results"></div>
+            </div>
+        </main>
+
+        <!-- Investigation View -->
+        <main id="investigate-view" class="view">
+            <section class="view-header">
+                <h1>🕵️ Dossiê de Investigação</h1>
+                <p class="subtitle">Geração automática de dossiês com dados públicos + web search + NER</p>
+            </section>
+
+            <div class="investigate-container">
+                <div class="investigate-tabs">
+                    <button class="inv-tab active" onclick="switchInvTab('company')">🏢 Empresa (CNPJ)</button>
+                    <button class="inv-tab" onclick="switchInvTab('person')">👤 Pessoa</button>
+                </div>
+
+                <div id="inv-company" class="inv-panel active">
+                    <div class="inv-input-group">
+                        <label>CNPJ da Empresa</label>
+                        <input type="text" id="inv-cnpj" placeholder="00.000.000/0000-00">
+                        <button class="btn-primary" onclick="investigateCompany()">INVESTIGAR</button>
+                    </div>
+                </div>
+
+                <div id="inv-person" class="inv-panel">
+                    <div class="inv-input-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="inv-nome" placeholder="Nome da pessoa">
+                    </div>
+                    <div class="inv-input-group">
+                        <label>CPF (opcional)</label>
+                        <input type="text" id="inv-cpf" placeholder="000.000.000-00">
+                        <button class="btn-primary" onclick="investigatePerson()">INVESTIGAR</button>
+                    </div>
+                </div>
+
+                <div id="inv-loading" class="inv-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>🔍 Coletando dados de múltiplas fontes... isso pode levar alguns segundos</p>
+                </div>
+
+                <div id="inv-result" class="inv-result"></div>
             </div>
         </main>
 

@@ -1899,3 +1899,269 @@ footer {
         max-width: 95%;
     }
 }
+
+/* Investigation View Styles */
+.investigate-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.investigate-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.inv-tab {
+    padding: 0.75rem 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.inv-tab:hover {
+    border-color: var(--accent-blue);
+}
+
+.inv-tab.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.inv-panel {
+    display: none;
+}
+
+.inv-panel.active {
+    display: block;
+}
+
+.inv-input-group {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+
+.inv-input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.inv-input-group input {
+    flex: 1;
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+}
+
+.inv-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem;
+    gap: 1rem;
+    color: var(--text-secondary);
+}
+
+/* Dossier Display */
+.dossier {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dossier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dossier-title h2 {
+    margin: 0 0 0.5rem;
+}
+
+.dossier-id {
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.risk-score {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+}
+
+.risk-score span {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.risk-score strong {
+    font-size: 2rem;
+}
+
+.risk-score.ok {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ECC71;
+}
+
+.risk-score.warning {
+    background: rgba(241, 196, 15, 0.15);
+    color: #F1C40F;
+}
+
+.risk-score.danger {
+    background: rgba(231, 76, 60, 0.15);
+    color: #E74C3C;
+}
+
+.red-flags {
+    padding: 1rem 1.5rem;
+    background: rgba(231, 76, 60, 0.1);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.flag-item {
+    padding: 0.5rem 0;
+    color: #E74C3C;
+    font-size: 0.9rem;
+}
+
+.dossier-section {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dossier-section:last-child {
+    border-bottom: none;
+}
+
+.dossier-section h3 {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.dossier-section.warning {
+    background: rgba(241, 196, 15, 0.05);
+}
+
+.dossier-section.danger {
+    background: rgba(231, 76, 60, 0.05);
+}
+
+.cadastral-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.cad-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.cad-item span {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.cad-item strong {
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+
+.partners-list,
+.sanctions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.partner-item,
+.sanction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--bg-color);
+    border-radius: 6px;
+}
+
+.partner-role,
+.sanction-type {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.sanction-type {
+    color: #E74C3C;
+    font-weight: 600;
+}
+
+.news-summary {
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.news-sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.news-sources a {
+    font-size: 0.8rem;
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+.news-sources a:hover {
+    text-decoration: underline;
+}
+
+.entities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.entity-tag {
+    padding: 0.5rem 1rem;
+    background: var(--bg-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.entity-tag small {
+    color: var(--text-secondary);
+}
+
+.dossier-sources {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: var(--bg-color);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.ok-text {
+    color: #2ECC71;
+}
