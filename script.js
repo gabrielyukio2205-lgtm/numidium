@@ -1637,6 +1637,39 @@ function renderSectionContent(key, content) {
         `;
     }
 
+    if (key === 'dados_politicos') {
+        let html = '<div class="political-data">';
+
+        if (content.ultimo_cargo) {
+            html += `<div class="pol-item"><strong>Último cargo:</strong> ${content.ultimo_cargo}</div>`;
+        }
+        if (content.partidos && content.partidos.length > 0) {
+            html += `<div class="pol-item"><strong>Partidos:</strong> ${content.partidos.join(', ')}</div>`;
+        }
+        if (content.patrimonio_declarado) {
+            html += `<div class="pol-item"><strong>Patrimônio declarado:</strong> R$ ${content.patrimonio_declarado.toLocaleString('pt-BR')}</div>`;
+        }
+        if (content.ufs && content.ufs.length > 0) {
+            html += `<div class="pol-item"><strong>UFs:</strong> ${content.ufs.join(', ')}</div>`;
+        }
+
+        if (content.candidaturas && content.candidaturas.length > 0) {
+            html += '<div class="candidaturas-list"><strong>Histórico:</strong>';
+            content.candidaturas.forEach(c => {
+                html += `<div class="candidatura-item">
+                    <span class="cand-ano">${c.ano}</span>
+                    <span class="cand-cargo">${c.cargo}</span>
+                    <span class="cand-partido">${c.partido}</span>
+                    <span class="cand-situacao">${c.situacao}</span>
+                </div>`;
+            });
+            html += '</div>';
+        }
+
+        html += '</div>';
+        return html;
+    }
+
     if (key === 'noticias' && content.resumo) {
         let html = `<div class="news-summary">${content.resumo}</div>`;
         if (content.fontes && content.fontes.length > 0) {
