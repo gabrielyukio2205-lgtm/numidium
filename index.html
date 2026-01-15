@@ -35,23 +35,9 @@
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
                 <a href="#" class="nav-link" data-view="network">REDE</a>
             </nav>
-            <div class="header-right">
-                <div class="project-selector">
-                    <select id="project-select" onchange="switchProject(this.value)">
-                        <option value="">📂 Todos os Projetos</option>
-                    </select>
-                    <button class="btn-icon" onclick="openProjectModal()" title="Gerenciar Projetos">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                    </button>
-                </div>
-                <div class="api-status">
-                    <span class="status-dot"></span>
-                    <span id="api-status-text">Conectando...</span>
-                </div>
+            <div class="api-status">
+                <span class="status-dot"></span>
+                <span id="api-status-text">Conectando...</span>
             </div>
         </header>
 

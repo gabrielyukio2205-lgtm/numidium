@@ -5,9 +5,6 @@
 // API Configuration
 const API_BASE = 'https://madras1-numidium.hf.space/api/v1';
 
-// Current project
-let currentProjectId = localStorage.getItem('currentProjectId') || '';
-
 // ==========================================
 // Canvas Background Animation
 // ==========================================
@@ -263,7 +260,6 @@ async function loadEntities() {
     const search = document.getElementById('entity-search').value;
 
     let endpoint = '/entities?limit=50';
-    if (currentProjectId) endpoint += `&project_id=${currentProjectId}`;
     if (type) endpoint += `&type=${type}`;
     if (search) endpoint += `&search=${encodeURIComponent(search)}`;
 
