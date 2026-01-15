@@ -124,15 +124,41 @@ initCanvas();
 animate();
 
 // ==========================================
+// Session Management
+// ==========================================
+
+let sessionId = localStorage.getItem('numidium_session_id');
+
+async function ensureSession() {
+    if (!sessionId) {
+        try {
+            const response = await fetch(`${API_BASE}/session/create`, { method: 'POST' });
+            const data = await response.json();
+            sessionId = data.session_id;
+            localStorage.setItem('numidium_session_id', sessionId);
+            console.log('Created new session:', sessionId);
+        } catch (e) {
+            console.error('Failed to create session:', e);
+            sessionId = crypto.randomUUID();
+            localStorage.setItem('numidium_session_id', sessionId);
+        }
+    }
+    return sessionId;
+}
+
+// ==========================================
 // API Functions
 // ==========================================
 
 async function apiRequest(endpoint, options = {}) {
+    await ensureSession();
+
     try {
         const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
             headers: {
                 'Content-Type': 'application/json',
+                'X-Session-Id': sessionId,
                 ...options.headers
             }
         });
