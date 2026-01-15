@@ -263,6 +263,7 @@ async function loadEntities() {
     const search = document.getElementById('entity-search').value;
 
     let endpoint = '/entities?limit=50';
+    if (currentProjectId) endpoint += `&project_id=${currentProjectId}`;
     if (type) endpoint += `&type=${type}`;
     if (search) endpoint += `&search=${encodeURIComponent(search)}`;
 
