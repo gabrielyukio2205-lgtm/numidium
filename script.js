@@ -5,6 +5,9 @@
 // API Configuration
 const API_BASE = 'https://madras1-numidium.hf.space/api/v1';
 
+// Current project
+let currentProjectId = localStorage.getItem('currentProjectId') || '';
+
 // ==========================================
 // Canvas Background Animation
 // ==========================================
@@ -1801,6 +1804,123 @@ function viewTimelineEvent(type, id) {
 }
 
 // ==========================================
+// Projects
+// ==========================================
+
+async function loadProjects() {
+    try {
+        const projects = await apiRequest('/projects');
+        const select = document.getElementById('project-select');
+
+        // Keep first option (All Projects)
+        select.innerHTML = '<option value="">📂 Todos os Projetos</option>';
+
+        projects.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = `📁 ${p.name} (${p.entity_count})`;
+            option.style.color = p.color;
+            if (p.id === currentProjectId) option.selected = true;
+            select.appendChild(option);
+        });
+
+        // Update project list in modal
+        renderProjectList(projects);
+
+    } catch (error) {
+        console.error('Failed to load projects:', error);
+    }
+}
+
+function renderProjectList(projects) {
+    const list = document.getElementById('project-list');
+    if (!list) return;
+
+    if (projects.length === 0) {
+        list.innerHTML = '<p class="empty-state">Nenhum projeto criado ainda</p>';
+        return;
+    }
+
+    list.innerHTML = projects.map(p => `
+        <div class="project-item" style="border-left: 3px solid ${p.color}">
+            <div class="project-info">
+                <strong>${p.name}</strong>
+                <span>${p.entity_count} entidades</span>
+            </div>
+            <div class="project-actions">
+                <button class="btn-sm" onclick="switchProject('${p.id}')">Usar</button>
+                <button class="btn-sm btn-danger" onclick="deleteProject('${p.id}')">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function createProject() {
+    const name = document.getElementById('new-project-name').value.trim();
+    const color = document.getElementById('new-project-color').value;
+
+    if (!name) {
+        alert('Digite um nome para o projeto');
+        return;
+    }
+
+    try {
+        await apiRequest('/projects', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, color })
+        });
+
+        document.getElementById('new-project-name').value = '';
+        loadProjects();
+
+    } catch (error) {
+        console.error('Failed to create project:', error);
+        alert('Erro ao criar projeto');
+    }
+}
+
+function switchProject(projectId) {
+    currentProjectId = projectId;
+    localStorage.setItem('currentProjectId', projectId);
+
+    // Update select
+    const select = document.getElementById('project-select');
+    if (select) select.value = projectId;
+
+    // Reload current view data
+    loadDashboard();
+    loadEntities();
+
+    closeProjectModal();
+}
+
+async function deleteProject(projectId) {
+    if (!confirm('Excluir este projeto? As entidades serão mantidas sem projeto.')) return;
+
+    try {
+        await apiRequest(`/projects/${projectId}`, { method: 'DELETE' });
+
+        if (currentProjectId === projectId) {
+            switchProject('');
+        }
+
+        loadProjects();
+    } catch (error) {
+        console.error('Failed to delete project:', error);
+    }
+}
+
+function openProjectModal() {
+    document.getElementById('project-modal').classList.add('active');
+    loadProjects();
+}
+
+function closeProjectModal() {
+    document.getElementById('project-modal').classList.remove('active');
+}
+
+// ==========================================
 // Initialize
 // ==========================================
 
@@ -1808,6 +1928,7 @@ async function init() {
     const online = await checkApiStatus();
     if (online) {
         loadDashboard();
+        loadProjects();
     }
 
     // Check status every 30 seconds
