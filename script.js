@@ -1549,11 +1549,104 @@ async function investigatePerson() {
     await runInvestigation('/investigate/person', { nome, cpf: cpf || null });
 }
 
-async function runInvestigation(endpoint, data) {
+async function investigateWithAgent() {
+    const mission = document.getElementById('inv-mission').value.trim();
+    if (!mission || mission.length < 5) {
+        alert('Digite uma missão de investigação (mínimo 5 caracteres)');
+        return;
+    }
+
     const loading = document.getElementById('inv-loading');
+    const loadingText = document.getElementById('inv-loading-text');
     const result = document.getElementById('inv-result');
 
     loading.style.display = 'flex';
+    loadingText.textContent = '🤖 Agente investigando... buscando no NUMIDIUM, consultando CNPJs, pesquisando na web...';
+    result.innerHTML = '';
+
+    try {
+        const response = await apiRequest('/investigate/agent', {
+            method: 'POST',
+            body: JSON.stringify({ mission, max_iterations: 10 })
+        });
+
+        loading.style.display = 'none';
+        result.innerHTML = renderAgentResult(response);
+
+    } catch (error) {
+        loading.style.display = 'none';
+        result.innerHTML = `<p class="error-text">❌ Erro: ${error.message || 'Falha na investigação'}</p>`;
+    }
+}
+
+function renderAgentResult(r) {
+    let html = `
+        <div class="dossier agent-result">
+            <div class="dossier-header">
+                <div class="dossier-title">
+                    <h2>🤖 Investigação: ${r.mission}</h2>
+                    <span class="dossier-id">${r.iterations} iterações • ${r.tools_used.length} ferramentas</span>
+                </div>
+                <div class="risk-score ok">
+                    <span>Status</span>
+                    <strong>${r.status}</strong>
+                </div>
+            </div>
+
+            <div class="agent-stats">
+                <div class="stat-item">
+                    <span class="stat-number">${r.entities_discovered}</span>
+                    <span class="stat-label">Entidades</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${r.connections_mapped}</span>
+                    <span class="stat-label">Conexões</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${r.findings.length}</span>
+                    <span class="stat-label">Descobertas</span>
+                </div>
+            </div>
+
+            <div class="dossier-section">
+                <h3>📋 Relatório</h3>
+                <div class="report-content">${formatChatResponse(r.report)}</div>
+            </div>
+    `;
+
+    if (r.findings && r.findings.length > 0) {
+        html += `<div class="dossier-section"><h3>🔍 Descobertas</h3><div class="findings-list">`;
+        r.findings.forEach(f => {
+            html += `
+                <div class="finding-item">
+                    <strong>${f.title}</strong>
+                    <p>${f.content}</p>
+                    <small>Fonte: ${f.source}</small>
+                </div>
+            `;
+        });
+        html += `</div></div>`;
+    }
+
+    if (r.tools_used && r.tools_used.length > 0) {
+        html += `<div class="dossier-section"><h3>🛠️ Ferramentas Usadas</h3><div class="tools-list">`;
+        r.tools_used.forEach(t => {
+            html += `<span class="tool-badge">${t}</span>`;
+        });
+        html += `</div></div>`;
+    }
+
+    html += `</div>`;
+    return html;
+}
+
+async function runInvestigation(endpoint, data) {
+    const loading = document.getElementById('inv-loading');
+    const loadingText = document.getElementById('inv-loading-text');
+    const result = document.getElementById('inv-result');
+
+    loading.style.display = 'flex';
+    loadingText.textContent = '🔍 Coletando dados de múltiplas fontes... isso pode levar alguns segundos';
     result.innerHTML = '';
 
     try {

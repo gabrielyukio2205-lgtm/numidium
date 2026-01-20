@@ -312,8 +312,22 @@
 
             <div class="investigate-container">
                 <div class="investigate-tabs">
+                    <button class="inv-tab" onclick="switchInvTab('agent')">🤖 Agente IA</button>
                     <button class="inv-tab active" onclick="switchInvTab('company')">🏢 Empresa (CNPJ)</button>
                     <button class="inv-tab" onclick="switchInvTab('person')">👤 Pessoa</button>
+                </div>
+
+                <div id="inv-agent" class="inv-panel">
+                    <div class="inv-input-group">
+                        <label>Missão de Investigação</label>
+                        <input type="text" id="inv-mission"
+                            placeholder="Ex: Investigue a rede de empresas de João Silva...">
+                        <button class="btn-primary" onclick="investigateWithAgent()">🚀 INVESTIGAR</button>
+                    </div>
+                    <p class="hint-text" style="margin-top: 0.5rem; font-size: 0.85rem;">
+                        O agente irá automaticamente buscar no NUMIDIUM, consultar CNPJs, pesquisar na web e seguir
+                        pistas.
+                    </p>
                 </div>
 
                 <div id="inv-company" class="inv-panel active">
@@ -338,7 +352,8 @@
 
                 <div id="inv-loading" class="inv-loading" style="display: none;">
                     <div class="loading-spinner"></div>
-                    <p>🔍 Coletando dados de múltiplas fontes... isso pode levar alguns segundos</p>
+                    <p id="inv-loading-text">🔍 Coletando dados de múltiplas fontes... isso pode levar alguns segundos
+                    </p>
                 </div>
 
                 <div id="inv-result" class="inv-result"></div>
