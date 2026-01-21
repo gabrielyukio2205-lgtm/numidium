@@ -1488,8 +1488,36 @@ async function sendChatMessage() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+/**
+ * Sanitize text from model that may contain buggy characters.
+ * Removes special chars like ‖ that appear when model tokens leak through.
+ */
+function sanitizeText(text) {
+    if (!text) return text;
+
+    // Remove the ‖ character (Double Vertical Line U+2016) 
+    // that appears in buggy model output
+    text = text.replace(/‖/g, '');
+    text = text.replace(/\u2016/g, '');
+
+    // Remove thinking tags if present
+    text = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+    text = text.replace(/<\|think\|>[\s\S]*?<\|\/think\|>/gi, '');
+
+    // Remove other common model artifacts
+    text = text.replace(/<\|.*?\|>/g, '');
+
+    // Clean up excessive whitespace
+    text = text.replace(/\n{3,}/g, '\n\n');
+    text = text.replace(/ {2,}/g, ' ');
+
+    return text.trim();
+}
+
 function formatChatResponse(text) {
     if (!text) return '<p>Sem resposta</p>';
+    // Apply sanitization first
+    text = sanitizeText(text);
     return text
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>')
@@ -1619,8 +1647,8 @@ function renderAgentResult(r) {
         r.findings.forEach(f => {
             html += `
                 <div class="finding-item">
-                    <strong>${f.title}</strong>
-                    <p>${f.content}</p>
+                    <strong>${sanitizeText(f.title)}</strong>
+                    <p>${sanitizeText(f.content)}</p>
                     <small>Fonte: ${f.source}</small>
                 </div>
             `;
