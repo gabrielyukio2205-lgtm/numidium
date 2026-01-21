@@ -1489,27 +1489,21 @@ async function sendChatMessage() {
 }
 
 /**
- * Sanitize text from model that may contain buggy characters.
- * Removes special chars like ‖ that appear when model tokens leak through.
+ * Sanitize text from model that may contain thinking artifacts.
+ * Only removes thinking tags, does NOT remove characters.
  */
 function sanitizeText(text) {
     if (!text) return text;
 
-    // Remove the ‖ character (Double Vertical Line U+2016) 
-    // that appears in buggy model output
-    text = text.replace(/‖/g, '');
-    text = text.replace(/\u2016/g, '');
-
-    // Remove thinking tags if present
+    // Remove thinking tags if present (but keep the content clean)
     text = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
     text = text.replace(/<\|think\|>[\s\S]*?<\|\/think\|>/gi, '');
 
-    // Remove other common model artifacts
+    // Remove other common model artifacts like <|...|> tags
     text = text.replace(/<\|.*?\|>/g, '');
 
     // Clean up excessive whitespace
     text = text.replace(/\n{3,}/g, '\n\n');
-    text = text.replace(/ {2,}/g, ' ');
 
     return text.trim();
 }
