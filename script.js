@@ -2082,7 +2082,10 @@ function aetherUpdateStatus(data) {
     const statusDiv = document.getElementById('aether-status-content');
     aetherJobId = data.job_id;
 
-    // Estatísticas básicas
+    // Estatísticas básicas (grid igual ao AetherMap original)
+    const riquezaLexical = data.metrics?.riqueza_lexical || 0;
+    const entropia = data.metrics?.entropia || 0;
+
     let html = `
         <div class="aether-stats-grid">
             <div class="aether-stat">
@@ -2095,81 +2098,75 @@ function aetherUpdateStatus(data) {
             </div>
             <div class="aether-stat">
                 <span class="aether-stat-value">${data.num_noise}</span>
-                <span class="aether-stat-label">Ruído</span>
+                <span class="aether-stat-label">Pontos de Ruído</span>
             </div>
             <div class="aether-stat">
-                <span class="aether-stat-value">${((1 - data.num_noise / data.num_documents) * 100).toFixed(1)}%</span>
-                <span class="aether-stat-label">Cobertura</span>
+                <span class="aether-stat-value">${riquezaLexical}</span>
+                <span class="aether-stat-label">Riqueza Lexical</span>
+            </div>
+            <div class="aether-stat highlight">
+                <span class="aether-stat-value">${entropia.toFixed(2)}</span>
+                <span class="aether-stat-label">Entropia (bits)</span>
             </div>
         </div>
-        <p class="aether-job-id"><strong>Job:</strong> ${data.job_id}</p>
     `;
 
-    // Métricas de qualidade (se disponível)
-    if (data.metrics && Object.keys(data.metrics).length > 0) {
-        html += `<div class="aether-metrics">`;
-        if (data.metrics.silhouette_score !== undefined) {
-            html += `<span class="metric-badge">Silhouette: ${data.metrics.silhouette_score.toFixed(3)}</span>`;
-        }
-        if (data.metrics.calinski_harabasz !== undefined) {
-            html += `<span class="metric-badge">CH Score: ${data.metrics.calinski_harabasz.toFixed(1)}</span>`;
-        }
+    // TF-IDF Global (barras horizontais como no AetherMap)
+    if (data.metrics?.top_tfidf_palavras && data.metrics.top_tfidf_palavras.length > 0) {
+        const maxScore = Math.max(...data.metrics.top_tfidf_palavras.map(p => p.score));
+        html += `<div class="aether-tfidf-section">
+            <h4>📊 Relevância Global (TF-IDF)</h4>
+            <div class="tfidf-bars">`;
+        data.metrics.top_tfidf_palavras.forEach(item => {
+            const widthPercent = (item.score / maxScore) * 100;
+            html += `
+                <div class="tfidf-bar-item">
+                    <span class="tfidf-word">${item.palavra}</span>
+                    <div class="tfidf-bar-container">
+                        <div class="tfidf-bar" style="width: ${widthPercent}%"></div>
+                        <span class="tfidf-score">${item.score.toFixed(1)}</span>
+                    </div>
+                </div>`;
+        });
+        html += `</div></div>`;
+    }
+
+    // Análise por Cluster (se disponível)
+    if (data.cluster_analysis && Object.keys(data.cluster_analysis).length > 0) {
+        html += `<div class="aether-clusters-section"><h4>📈 Análise por Cluster</h4>`;
+
+        // cluster_analysis é um dict onde chave = cluster_id
+        const clusters = Object.entries(data.cluster_analysis);
+        clusters.slice(0, 5).forEach(([clusterId, clusterData]) => {
+            if (clusterId === '-1') return; // Skip noise
+
+            const numDocs = clusterData.count || clusterData.num_docs || '?';
+            const topWords = clusterData.top_tfidf || clusterData.top_words || [];
+
+            html += `
+                <div class="cluster-card">
+                    <div class="cluster-header">
+                        <span class="cluster-name">Cluster ${clusterId}</span>
+                        <span class="cluster-count">${numDocs} Documentos</span>
+                    </div>`;
+
+            if (topWords.length > 0) {
+                const wordsStr = topWords.slice(0, 5).map(w =>
+                    typeof w === 'string' ? w : (w.palavra || w.word)
+                ).join(', ');
+                html += `<p class="cluster-words"><strong>Top Palavras (TF-IDF):</strong> "${wordsStr}"</p>`;
+            }
+
+            html += `</div>`;
+        });
+
         html += `</div>`;
     }
 
-    // Análise de clusters (se disponível)
-    if (data.cluster_analysis && data.cluster_analysis.clusters) {
-        html += `<div class="aether-clusters-preview"><h4>📊 Clusters Encontrados:</h4><ul>`;
-        data.cluster_analysis.clusters.slice(0, 5).forEach((cluster, idx) => {
-            const size = cluster.size || cluster.count || '?';
-            const label = cluster.label || cluster.name || `Cluster ${idx}`;
-            html += `<li><strong>${label}</strong> (${size} docs)</li>`;
-        });
-        if (data.cluster_analysis.clusters.length > 5) {
-            html += `<li class="more">... e mais ${data.cluster_analysis.clusters.length - 5} clusters</li>`;
-        }
-        html += `</ul></div>`;
-    }
+    // Job ID pequeno no final
+    html += `<p class="aether-job-id">Job: ${data.job_id}</p>`;
 
     statusDiv.innerHTML = html;
-
-    // Auto-carregar descrição dos clusters
-    aetherLoadClusterDescriptions();
-}
-
-async function aetherLoadClusterDescriptions() {
-    if (!aetherJobId) return;
-
-    try {
-        const response = await fetch(`${API_BASE}/aethermap/describe-clusters`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Session-Id': sessionId
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            const statusDiv = document.getElementById('aether-status-content');
-
-            if (data.insights && data.insights.clusters) {
-                let clusterHtml = `<div class="aether-cluster-insights"><h4>🧠 Análise dos Clusters:</h4>`;
-                data.insights.clusters.slice(0, 5).forEach(cluster => {
-                    clusterHtml += `
-                        <div class="cluster-insight">
-                            <strong>${cluster.label || 'Cluster ' + cluster.id}</strong>
-                            <p>${cluster.description || cluster.summary || 'Sem descrição'}</p>
-                        </div>
-                    `;
-                });
-                clusterHtml += `</div>`;
-                statusDiv.innerHTML += clusterHtml;
-            }
-        }
-    } catch (e) {
-        console.log('Cluster descriptions not available:', e);
-    }
 }
 
 async function aetherUploadFile() {

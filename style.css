@@ -3046,3 +3046,141 @@ footer .version {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* AetherMap Stats Grid - 5 columns for all stats */
+.aether-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.aether-stat.highlight {
+    background: rgba(255, 193, 7, 0.15);
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.aether-stat.highlight .aether-stat-value {
+    color: #ffc107;
+    -webkit-text-fill-color: #ffc107;
+}
+
+/* TF-IDF Bar Chart Section */
+.aether-tfidf-section {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.aether-tfidf-section h4 {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--accent-primary);
+}
+
+.tfidf-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tfidf-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tfidf-word {
+    min-width: 100px;
+    font-size: 0.85rem;
+    text-align: right;
+    color: var(--text-secondary);
+}
+
+.tfidf-bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tfidf-bar {
+    height: 20px;
+    background: linear-gradient(90deg, #17c3b2 0%, #00b4d8 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.tfidf-score {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    min-width: 40px;
+}
+
+/* Cluster Analysis Section */
+.aether-clusters-section {
+    margin: 1.5rem 0;
+}
+
+.aether-clusters-section h4 {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--accent-primary);
+}
+
+.cluster-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.cluster-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.cluster-name {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+.cluster-count {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: rgba(0, 212, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+}
+
+.cluster-words {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.cluster-words strong {
+    color: var(--text-primary);
+}
+
+@media (max-width: 992px) {
+    .aether-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .aether-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tfidf-word {
+        min-width: 60px;
+        font-size: 0.75rem;
+    }
+}
