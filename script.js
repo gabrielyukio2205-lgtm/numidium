@@ -2140,8 +2140,8 @@ function aetherUpdateStatus(data) {
         clusters.slice(0, 5).forEach(([clusterId, clusterData]) => {
             if (clusterId === '-1') return; // Skip noise
 
-            const numDocs = clusterData.count || clusterData.num_docs || '?';
-            const topWords = clusterData.top_tfidf || clusterData.top_words || [];
+            const numDocs = clusterData.num_documentos || clusterData.count || '?';
+            const topWords = clusterData.top_palavras || clusterData.top_words || [];
 
             html += `
                 <div class="cluster-card">
