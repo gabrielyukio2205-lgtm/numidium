@@ -2798,14 +2798,16 @@ footer .version {
 }
 
 .aether-tab-content {
-    display: none;
+    display: none !important;
     gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
+    padding: 1rem 0;
+    width: 100%;
 }
 
 .aether-tab-content.active {
-    display: flex;
+    display: flex !important;
 }
 
 .aether-tab-content input[type="file"],
