@@ -320,11 +320,13 @@ async function loadEntities() {
 
 function getTypeIcon(type) {
     const icons = {
-        person: '👤',
-        organization: '🏢',
-        location: '📍',
-        event: '📅',
-        unknown: '❓'
+        person: 'PES',
+        organization: 'ORG',
+        location: 'LOC',
+        event: 'EVT',
+        document: 'DOC',
+        relationship: 'REL',
+        unknown: 'UNK'
     };
     return icons[type] || icons.unknown;
 }
@@ -349,11 +351,11 @@ async function showEntityDetail(id) {
                 <h2>${entity.name}</h2>
                 <p class="entity-description">${entity.description || 'Sem descrição'}</p>
                 
-                ${entity.source_url ? `<a href="${entity.source_url}" target="_blank" class="source-link">🔗 Ver fonte original</a>` : ''}
+                ${entity.source_url ? `<a href="${entity.source_url}" target="_blank" class="source-link">Ver fonte original</a>` : ''}
                 
                 ${entity.latitude && entity.longitude ? `
                     <div class="geo-info">
-                        <span>📍 ${entity.latitude.toFixed(4)}, ${entity.longitude.toFixed(4)}</span>
+                        <span>${entity.latitude.toFixed(4)}, ${entity.longitude.toFixed(4)}</span>
                     </div>
                 ` : ''}
                 
@@ -370,8 +372,8 @@ async function showEntityDetail(id) {
                 </div>
                 
                 <div class="entity-actions">
-                    <button class="btn-primary" onclick="researchEntity('${entity.name}', '${entity.type}')">🔍 Pesquisar mais</button>
-                    <button class="btn-secondary" onclick="deleteEntity('${id}')">🗑️ Excluir</button>
+                    <button class="btn-primary" onclick="researchEntity('${entity.name}', '${entity.type}')">Pesquisar mais</button>
+                    <button class="btn-secondary" onclick="deleteEntity('${id}')">Excluir</button>
                 </div>
             </div>
         `;
@@ -432,9 +434,9 @@ async function searchWikipedia() {
                 <h4>${r.title}</h4>
                 <p>${r.snippet}</p>
                 <div class="result-actions">
-                    <button onclick="importFromWikipedia('${r.title}', 'person')">👤 Pessoa</button>
-                    <button onclick="importFromWikipedia('${r.title}', 'organization')">🏢 Org</button>
-                    <button onclick="importFromWikipedia('${r.title}', 'location')">📍 Local</button>
+                    <button onclick="importFromWikipedia('${r.title}', 'person')">Pessoa</button>
+                    <button onclick="importFromWikipedia('${r.title}', 'organization')">Organização</button>
+                    <button onclick="importFromWikipedia('${r.title}', 'location')">Local</button>
                 </div>
             </div>
         `).join('');
@@ -452,11 +454,11 @@ async function importFromWikipedia(title, type) {
             method: 'POST'
         });
 
-        alert(`✅ "${entity.name}" importado com sucesso!`);
+        alert(`"${entity.name}" importado com sucesso!`);
         loadDashboard();
 
     } catch (error) {
-        alert('❌ Erro ao importar');
+        alert('Erro ao importar');
     }
 }
 
@@ -488,7 +490,7 @@ async function fetchNewsFeed(feed) {
                 <p>${a.description || ''}</p>
                 <div class="news-meta">
                     <span>${a.source}</span>
-                    <a href="${a.url}" target="_blank">🔗 Ler mais</a>
+                    <a href="${a.url}" target="_blank">Ler mais</a>
                 </div>
             </div>
         `).join('');
@@ -513,7 +515,7 @@ async function searchNews() {
             <div class="news-item">
                 <h4>${a.title}</h4>
                 <p>${a.description || ''}</p>
-                <a href="${a.url}" target="_blank">🔗 Ler mais</a>
+                <a href="${a.url}" target="_blank">Ler mais</a>
             </div>
         `).join('');
 
@@ -549,12 +551,12 @@ async function createManualEntity(event) {
             body: JSON.stringify(entity)
         });
 
-        alert('✅ Entidade criada com sucesso!');
+        alert('Entidade criada com sucesso!');
         document.getElementById('manual-entity-form').reset();
         loadDashboard();
 
     } catch (error) {
-        alert('❌ Erro ao criar entidade');
+        alert('Erro ao criar entidade');
     }
 }
 
@@ -572,7 +574,7 @@ async function analyzeText() {
     resultsDiv.innerHTML = `
         <div class="analyze-loading">
             <div class="loading-spinner"></div>
-            <p>🧠 Analisando texto com IA (Qwen 3 235B via Cerebras)...</p>
+            <p>Analisando texto com IA (Qwen 3 235B via Cerebras)...</p>
             <p class="loading-sub">Isso pode levar alguns segundos</p>
         </div>
     `;
@@ -619,7 +621,7 @@ async function analyzeText() {
 
         // Entities
         if (result.entities.length > 0) {
-            html += '<div class="analyze-section"><h3>📋 Entidades Extraídas</h3><div class="entities-grid small">';
+            html += '<div class="analyze-section"><h3>Entidades Extraídas</h3><div class="entities-grid small">';
             result.entities.forEach(e => {
                 html += `
                     <div class="entity-card mini ${e.created ? 'created' : ''}">
@@ -627,7 +629,7 @@ async function analyzeText() {
                         <div class="entity-info">
                             <strong>${e.name}</strong>
                             ${e.role ? `<span class="entity-role">${e.role}</span>` : ''}
-                            ${e.created ? '<span class="badge-created">✓ Criado</span>' : ''}
+                            ${e.created ? '<span class="badge-created">Criado</span>' : ''}
                         </div>
                     </div>
                 `;
@@ -637,7 +639,7 @@ async function analyzeText() {
 
         // Relationships
         if (result.relationships.length > 0) {
-            html += '<div class="analyze-section"><h3>🔗 Relacionamentos</h3><div class="relationships-list">';
+            html += '<div class="analyze-section"><h3>Relacionamentos</h3><div class="relationships-list">';
             result.relationships.forEach(r => {
                 html += `
                     <div class="relationship-item ${r.created ? 'created' : ''}">
@@ -646,7 +648,7 @@ async function analyzeText() {
                         <span class="rel-type">${r.relationship_type}</span>
                         <span class="rel-arrow">→</span>
                         <span class="rel-target">${r.target}</span>
-                        ${r.created ? '<span class="badge-created">✓</span>' : ''}
+                        ${r.created ? '<span class="badge-created">Criado</span>' : ''}
                     </div>
                 `;
             });
@@ -655,15 +657,15 @@ async function analyzeText() {
 
         // Events
         if (result.events.length > 0) {
-            html += '<div class="analyze-section"><h3>📅 Eventos</h3><div class="events-list">';
+            html += '<div class="analyze-section"><h3>Eventos</h3><div class="events-list">';
             result.events.forEach(ev => {
                 html += `
                     <div class="event-item ${ev.created ? 'created' : ''}">
                         <strong>${ev.description}</strong>
                         ${ev.event_type ? `<span class="event-type">${ev.event_type}</span>` : ''}
-                        ${ev.date ? `<span class="event-date">📅 ${ev.date}</span>` : ''}
-                        ${ev.participants && ev.participants.length > 0 ? `<span class="event-participants">👥 ${ev.participants.join(', ')}</span>` : ''}
-                        ${ev.created ? '<span class="badge-created">✓ Criado</span>' : ''}
+                        ${ev.date ? `<span class="event-date">Data: ${ev.date}</span>` : ''}
+                        ${ev.participants && ev.participants.length > 0 ? `<span class="event-participants">Participantes: ${ev.participants.join(', ')}</span>` : ''}
+                        ${ev.created ? '<span class="badge-created">Criado</span>' : ''}
                     </div>
                 `;
             });
@@ -686,7 +688,7 @@ async function analyzeText() {
         console.error('Analysis error:', error);
         resultsDiv.innerHTML = `
             <div class="analyze-error">
-                <p>❌ Erro ao analisar texto</p>
+                <p>Erro ao analisar texto</p>
                 <p class="error-detail">${error.message || 'Verifique se a API está configurada corretamente.'}</p>
             </div>
         `;
@@ -726,7 +728,7 @@ async function globalSearch() {
             html += '<h3>Eventos</h3><div class="search-section">';
             html += results.events.map(e => `
                 <div class="search-result-item">
-                    <span class="result-icon">📅</span>
+                    <span class="result-icon">${getTypeIcon('event')}</span>
                     <div>
                         <strong>${e.title}</strong>
                         <p>${e.description?.substring(0, 80) || ''}...</p>
@@ -740,7 +742,7 @@ async function globalSearch() {
             html += '<h3>Documentos</h3><div class="search-section">';
             html += results.documents.map(d => `
                 <div class="search-result-item">
-                    <span class="result-icon">📄</span>
+                    <span class="result-icon">${getTypeIcon('document')}</span>
                     <div>
                         <strong>${d.title}</strong>
                         <p>${d.content?.substring(0, 80) || ''}...</p>
@@ -861,7 +863,7 @@ async function loadMapData() {
                         <div class="entity-type ${e.type}">${getTypeIcon(e.type)}</div>
                         <div class="entity-info">
                             <h3>${e.name}</h3>
-                            <p>📍 ${e.lat.toFixed(4)}, ${e.lng.toFixed(4)}</p>
+                            <p>Coord: ${e.lat.toFixed(4)}, ${e.lng.toFixed(4)}</p>
                             <span class="entity-source">Clique para ver detalhes</span>
                         </div>
                     </div>
@@ -1004,7 +1006,7 @@ function initNetworkGraph() {
 
         document.getElementById('network-selected').innerHTML = `
             <div class="selected-relationship">
-                <h4>🔗 Relacionamento</h4>
+                <h4>Relacionamento</h4>
                 <p><strong>${sourceNode?.fullName || 'Desconhecido'}</strong></p>
                 <p class="rel-type">${data.label}</p>
                 <p><strong>${targetNode?.fullName || 'Desconhecido'}</strong></p>
@@ -1128,7 +1130,7 @@ async function loadMergeSuggestions() {
     container.innerHTML = `
         <div class="analyze-loading">
             <div class="loading-spinner"></div>
-            <p>🧠 Analisando entidades com IA...</p>
+            <p>Analisando entidades com IA...</p>
         </div>
     `;
 
@@ -1154,7 +1156,7 @@ async function loadMergeSuggestions() {
             });
             container.innerHTML = html;
         } else {
-            container.innerHTML = '<p class="hint-text">✅ Nenhuma duplicata encontrada pela IA</p>';
+            container.innerHTML = '<p class="hint-text">Nenhuma duplicata encontrada pela IA</p>';
         }
 
     } catch (error) {
@@ -1225,7 +1227,7 @@ async function executeMerge() {
             method: 'POST'
         });
 
-        alert(`✅ ${result.message}`);
+        alert(`${result.message}`);
         closeMergeModal();
         loadEntities();
 
@@ -1236,7 +1238,7 @@ async function executeMerge() {
 
     } catch (error) {
         console.error('Merge error:', error);
-        alert('❌ Erro ao mesclar entidades');
+        alert('Erro ao mesclar entidades');
     }
 }
 
@@ -1303,13 +1305,13 @@ async function createRelationship() {
             })
         });
 
-        alert('✅ Conexão criada!');
+        alert('Conexão criada!');
         closeRelationshipModal();
         loadNetworkGraph();
 
     } catch (error) {
         console.error('Error creating relationship:', error);
-        alert('❌ Erro ao criar conexão');
+        alert('Erro ao criar conexão');
     }
 }
 
@@ -1349,7 +1351,7 @@ async function executeResearch() {
         // Build results HTML
         let html = `
             <div class="research-answer">
-                <h3>📝 Resposta</h3>
+                <h3>Resposta</h3>
                 <div class="answer-content">${formatResearchAnswer(response.answer)}</div>
             </div>
         `;
@@ -1358,16 +1360,16 @@ async function executeResearch() {
         if (autoExtract) {
             html += `
                 <div class="research-extraction-stats">
-                    <span>✅ ${response.extracted_entities} entidades extraídas</span>
-                    <span>🔗 ${response.extracted_relationships} relacionamentos criados</span>
-                    <span>⏱️ ${(response.processing_time_ms / 1000).toFixed(1)}s</span>
+                    <span>Entidades: ${response.extracted_entities}</span>
+                    <span>Relacionamentos: ${response.extracted_relationships}</span>
+                    <span>Tempo: ${(response.processing_time_ms / 1000).toFixed(1)}s</span>
                 </div>
             `;
         }
 
         // Sources
         if (response.sources && response.sources.length > 0) {
-            html += `<div class="research-sources"><h3>📚 Fontes</h3><div class="sources-list">`;
+            html += `<div class="research-sources"><h3>Fontes</h3><div class="sources-list">`;
             response.sources.forEach((src, idx) => {
                 html += `
                     <div class="source-item">
@@ -1387,7 +1389,7 @@ async function executeResearch() {
     } catch (error) {
         loading.style.display = 'none';
         console.error('Research error:', error);
-        results.innerHTML = `<p class="error-text">❌ Erro na pesquisa: ${error.message || 'Falha na API'}</p>`;
+        results.innerHTML = `<p class="error-text">Erro na pesquisa: ${error.message || 'Falha na API'}</p>`;
     }
 }
 
@@ -1435,7 +1437,7 @@ async function sendChatMessage() {
     messagesContainer.innerHTML += `
         <div class="chat-message user">
             <div class="message-content"><p>${message}</p></div>
-            <div class="message-avatar">👤</div>
+            <div class="message-avatar">EU</div>
         </div>
     `;
 
@@ -1446,7 +1448,7 @@ async function sendChatMessage() {
     const loadingId = 'loading-' + Date.now();
     messagesContainer.innerHTML += `
         <div class="chat-message assistant" id="${loadingId}">
-            <div class="message-avatar">🛡️</div>
+            <div class="message-avatar">AV</div>
             <div class="message-content"><p class="typing">Pensando...</p></div>
         </div>
     `;
@@ -1465,12 +1467,12 @@ async function sendChatMessage() {
         // Replace loading with response
         const loadingEl = document.getElementById(loadingId);
         loadingEl.innerHTML = `
-            <div class="message-avatar">🛡️</div>
+            <div class="message-avatar">AV</div>
             <div class="message-content">
                 ${formatChatResponse(response.answer)}
                 <div class="message-meta">
-                    ${response.local_context_used ? '📊 ' + response.entities_found + ' entidades' : ''} 
-                    ${response.web_context_used ? '🌐 Web' : ''}
+                    ${response.local_context_used ? 'Local: ' + response.entities_found + ' entidades' : ''} 
+                    ${response.web_context_used ? 'Web' : ''}
                 </div>
             </div>
         `;
@@ -1478,9 +1480,9 @@ async function sendChatMessage() {
     } catch (error) {
         const loadingEl = document.getElementById(loadingId);
         loadingEl.innerHTML = `
-            <div class="message-avatar">🛡️</div>
+            <div class="message-avatar">AV</div>
             <div class="message-content error">
-                <p>❌ Erro: ${error.message || 'Falha na comunicação'}</p>
+                <p>Erro: ${error.message || 'Falha na comunicação'}</p>
             </div>
         `;
     }
@@ -1526,7 +1528,7 @@ async function clearChatHistory() {
         await apiRequest('/chat/clear', { method: 'POST' });
         document.getElementById('chat-messages').innerHTML = `
             <div class="chat-message assistant">
-                <div class="message-avatar">🛡️</div>
+                <div class="message-avatar">AV</div>
                 <div class="message-content">
                     <p>Histórico limpo! Como posso ajudar?</p>
                 </div>
@@ -1583,7 +1585,7 @@ async function investigateWithAgent() {
     const result = document.getElementById('inv-result');
 
     loading.style.display = 'flex';
-    loadingText.textContent = '🤖 Agente investigando... buscando no NUMIDIUM, consultando CNPJs, pesquisando na web...';
+    loadingText.textContent = 'Agente investigando... buscando no NUMIDIUM, consultando CNPJs, pesquisando na web...';
     result.innerHTML = '';
 
     try {
@@ -1597,7 +1599,7 @@ async function investigateWithAgent() {
 
     } catch (error) {
         loading.style.display = 'none';
-        result.innerHTML = `<p class="error-text">❌ Erro: ${error.message || 'Falha na investigação'}</p>`;
+        result.innerHTML = `<p class="error-text">Erro: ${error.message || 'Falha na investigação'}</p>`;
     }
 }
 
@@ -1606,7 +1608,7 @@ function renderAgentResult(r) {
         <div class="dossier agent-result">
             <div class="dossier-header">
                 <div class="dossier-title">
-                    <h2>🤖 Investigação: ${r.mission}</h2>
+                    <h2>Investigação: ${r.mission}</h2>
                     <span class="dossier-id">${r.iterations} iterações • ${r.tools_used.length} ferramentas</span>
                 </div>
                 <div class="risk-score ok">
@@ -1631,13 +1633,13 @@ function renderAgentResult(r) {
             </div>
 
             <div class="dossier-section">
-                <h3>📋 Relatório</h3>
+                <h3>Relatório</h3>
                 <div class="report-content">${formatChatResponse(r.report)}</div>
             </div>
     `;
 
     if (r.findings && r.findings.length > 0) {
-        html += `<div class="dossier-section"><h3>🔍 Descobertas</h3><div class="findings-list">`;
+        html += `<div class="dossier-section"><h3>Descobertas</h3><div class="findings-list">`;
         r.findings.forEach(f => {
             html += `
                 <div class="finding-item">
@@ -1651,7 +1653,7 @@ function renderAgentResult(r) {
     }
 
     if (r.tools_used && r.tools_used.length > 0) {
-        html += `<div class="dossier-section"><h3>🛠️ Ferramentas Usadas</h3><div class="tools-list">`;
+        html += `<div class="dossier-section"><h3>Ferramentas Usadas</h3><div class="tools-list">`;
         r.tools_used.forEach(t => {
             html += `<span class="tool-badge">${t}</span>`;
         });
@@ -1668,7 +1670,7 @@ async function runInvestigation(endpoint, data) {
     const result = document.getElementById('inv-result');
 
     loading.style.display = 'flex';
-    loadingText.textContent = '🔍 Coletando dados de múltiplas fontes... isso pode levar alguns segundos';
+    loadingText.textContent = 'Coletando dados de múltiplas fontes... isso pode levar alguns segundos';
     result.innerHTML = '';
 
     try {
@@ -1682,7 +1684,7 @@ async function runInvestigation(endpoint, data) {
 
     } catch (error) {
         loading.style.display = 'none';
-        result.innerHTML = `<p class="error-text">❌ Erro: ${error.message || 'Falha na investigação'}</p>`;
+        result.innerHTML = `<p class="error-text">Erro: ${error.message || 'Falha na investigação'}</p>`;
     }
 }
 
@@ -1693,7 +1695,7 @@ function renderDossier(d) {
         <div class="dossier">
             <div class="dossier-header">
                 <div class="dossier-title">
-                    <h2>${d.tipo === 'organization' ? '🏢' : '👤'} ${d.alvo}</h2>
+                    <h2>${getTypeIcon(d.tipo)} ${d.alvo}</h2>
                     ${d.cnpj_cpf ? `<span class="dossier-id">${d.cnpj_cpf}</span>` : ''}
                 </div>
                 <div class="risk-score ${riskClass}">
@@ -1716,7 +1718,7 @@ function renderDossier(d) {
     for (const [key, section] of Object.entries(d.secoes || {})) {
         html += `
             <div class="dossier-section ${section.status}">
-                <h3>${section.icone} ${section.titulo}</h3>
+                <h3>${section.titulo}</h3>
                 <div class="section-content">
                     ${renderSectionContent(key, section.conteudo)}
                 </div>
@@ -1766,7 +1768,7 @@ function renderSectionContent(key, content) {
 
     if (key === 'sancoes' && content.registros) {
         if (content.registros.length === 0) {
-            return `<p class="ok-text">✅ ${content.mensagem || 'Nenhuma sanção encontrada'}</p>`;
+            return `<p class="ok-text">${content.mensagem || 'Nenhuma sanção encontrada'}</p>`;
         }
         return `
             <div class="sanctions-list">
@@ -1870,7 +1872,7 @@ async function loadTimeline() {
         if (!data.groups || data.groups.length === 0) {
             container.innerHTML = `
                 <div class="timeline-empty">
-                    <span class="empty-icon">📅</span>
+                    <span class="empty-icon" aria-hidden="true"></span>
                     <h3>Nenhum evento encontrado</h3>
                     <p>Não há entidades ou conexões criadas no período selecionado.</p>
                 </div>
@@ -1886,7 +1888,7 @@ async function loadTimeline() {
         console.error('Timeline error:', error);
         container.innerHTML = `
             <div class="timeline-empty error">
-                <span class="empty-icon">⚠️</span>
+                <span class="empty-icon" aria-hidden="true"></span>
                 <h3>Erro ao carregar timeline</h3>
                 <p>${error.message || 'Tente novamente'}</p>
             </div>
@@ -1911,7 +1913,7 @@ function renderTimeline(groups) {
             const typeClass = event.entity_type || event.type;
             html += `
                 <div class="timeline-event ${typeClass}" style="--event-delay: ${eventIndex * 0.05}s" onclick="viewTimelineEvent('${event.type}', ${event.id})">
-                    <div class="event-icon">${event.icon}</div>
+                    <div class="event-icon">${getTypeIcon(typeClass)}</div>
                     <div class="event-content">
                         <h4>${event.name}</h4>
                         ${event.description ? `<p>${event.description}</p>` : ''}
@@ -1951,12 +1953,12 @@ async function loadProjects() {
         const select = document.getElementById('project-select');
 
         // Keep first option (All Projects)
-        select.innerHTML = '<option value="">📂 Todos os Projetos</option>';
+        select.innerHTML = '<option value="">Todos os Projetos</option>';
 
         projects.forEach(p => {
             const option = document.createElement('option');
             option.value = p.id;
-            option.textContent = `📁 ${p.name} (${p.entity_count})`;
+            option.textContent = `${p.name} (${p.entity_count})`;
             option.style.color = p.color;
             if (p.id === currentProjectId) option.selected = true;
             select.appendChild(option);
@@ -2115,7 +2117,7 @@ function aetherUpdateStatus(data) {
     if (data.metrics?.top_tfidf_palavras && data.metrics.top_tfidf_palavras.length > 0) {
         const maxScore = Math.max(...data.metrics.top_tfidf_palavras.map(p => p.score));
         html += `<div class="aether-tfidf-section">
-            <h4>📊 Relevância Global (TF-IDF)</h4>
+            <h4>Relevância Global (TF-IDF)</h4>
             <div class="tfidf-bars">`;
         data.metrics.top_tfidf_palavras.forEach(item => {
             const widthPercent = (item.score / maxScore) * 100;
@@ -2133,7 +2135,7 @@ function aetherUpdateStatus(data) {
 
     // Análise por Cluster (se disponível)
     if (data.cluster_analysis && Object.keys(data.cluster_analysis).length > 0) {
-        html += `<div class="aether-clusters-section"><h4>📈 Análise por Cluster</h4>`;
+        html += `<div class="aether-clusters-section"><h4>Análise por Cluster</h4>`;
 
         // cluster_analysis é um dict onde chave = cluster_id
         const clusters = Object.entries(data.cluster_analysis);

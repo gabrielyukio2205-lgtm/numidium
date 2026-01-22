@@ -27,12 +27,12 @@
             <nav>
                 <a href="#" class="nav-link active" data-view="dashboard">DASHBOARD</a>
                 <a href="#" class="nav-link" data-view="entities">ENTIDADES</a>
-                <a href="#" class="nav-link" data-view="timeline">📅 TIMELINE</a>
+                <a href="#" class="nav-link" data-view="timeline">TIMELINE</a>
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="research">PESQUISAR</a>
-                <a href="#" class="nav-link" data-view="investigate">🕵️ DOSSIÊ</a>
-                <a href="#" class="nav-link" data-view="aethermap">🌌 AETHERMAP</a>
-                <a href="#" class="nav-link" data-view="chat">💬 CHAT</a>
+                <a href="#" class="nav-link" data-view="investigate">DOSSIÊ</a>
+                <a href="#" class="nav-link" data-view="aethermap">AETHERMAP</a>
+                <a href="#" class="nav-link" data-view="chat">CHAT</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
                 <a href="#" class="nav-link" data-view="network">REDE</a>
             </nav>
@@ -68,7 +68,7 @@
                 </div>
                 <div class="metric-card">
                     <div class="card-header">
-                        <span class="icon">✣</span>
+                        <span class="icon" aria-hidden="true"></span>
                         <span class="card-title">CONEXÕES</span>
                     </div>
                     <div class="card-body">
@@ -81,7 +81,7 @@
                 </div>
                 <div class="metric-card">
                     <div class="card-header">
-                        <span class="icon">◈</span>
+                        <span class="icon" aria-hidden="true"></span>
                         <span class="card-title">EVENTOS</span>
                     </div>
                     <div class="card-body">
@@ -94,7 +94,7 @@
                 </div>
                 <div class="metric-card">
                     <div class="card-header">
-                        <span class="icon">📄</span>
+                        <span class="icon" aria-hidden="true"></span>
                         <span class="card-title">DOCUMENTOS</span>
                     </div>
                     <div class="card-body">
@@ -120,7 +120,7 @@
             <section class="view-header">
                 <h1>Entidades</h1>
                 <div class="header-actions">
-                    <button class="btn-secondary" onclick="showMergeModal()">🔗 MESCLAR DUPLICATAS</button>
+                    <button class="btn-secondary" onclick="showMergeModal()">MESCLAR DUPLICATAS</button>
                     <button class="btn-primary" onclick="showAddEntityModal()">+ NOVA ENTIDADE</button>
                 </div>
             </section>
@@ -151,7 +151,7 @@
                 <button class="tab-btn active" onclick="switchIngestTab('wikipedia')">Wikipedia</button>
                 <button class="tab-btn" onclick="switchIngestTab('news')">Notícias</button>
                 <button class="tab-btn" onclick="switchIngestTab('manual')">Manual</button>
-                <button class="tab-btn" onclick="switchIngestTab('analyze')">🧠 Análise IA</button>
+                <button class="tab-btn" onclick="switchIngestTab('analyze')">Análise IA</button>
             </div>
 
             <!-- Wikipedia Tab -->
@@ -213,7 +213,7 @@
             <!-- AI Analysis Tab -->
             <div id="ingest-analyze" class="ingest-panel">
                 <div class="analyze-intro">
-                    <p>🧠 <strong>Análise Inteligente com IA</strong> - Cole qualquer texto (notícia, documento, artigo)
+                    <p><strong>Análise Inteligente com IA</strong> - Cole qualquer texto (notícia, documento, artigo)
                         e o sistema irá extrair automaticamente entidades, relacionamentos e eventos usando IA avançada.
                     </p>
                 </div>
@@ -228,7 +228,7 @@
                         Criar automaticamente entidades encontradas no banco de dados
                     </label>
                 </div>
-                <button class="btn-primary" onclick="analyzeText()">🔍 ANALISAR TEXTO</button>
+                <button class="btn-primary" onclick="analyzeText()">ANALISAR TEXTO</button>
                 <div id="analyze-results" class="analyze-results"></div>
             </div>
         </main>
@@ -271,7 +271,7 @@
         <!-- Research View -->
         <main id="research-view" class="view">
             <section class="view-header">
-                <h1>🔍 Deep Research</h1>
+                <h1>Deep Research</h1>
                 <p class="subtitle">Pesquisa avançada com IA e extração automática de entidades</p>
             </section>
 
@@ -281,9 +281,9 @@
                         <input type="text" id="research-query"
                             placeholder="Digite sua pesquisa... (ex: Elon Musk negócios 2024)">
                         <select id="research-mode">
-                            <option value="search">🔎 Busca Rápida</option>
-                            <option value="deep">🧠 Deep Research</option>
-                            <option value="heavy">📚 Busca Completa</option>
+                            <option value="search">Busca Rápida</option>
+                            <option value="deep">Deep Research</option>
+                            <option value="heavy">Busca Completa</option>
                         </select>
                         <button class="btn-primary" onclick="executeResearch()">PESQUISAR</button>
                     </div>
@@ -297,7 +297,7 @@
 
                 <div id="research-loading" class="research-loading" style="display: none;">
                     <div class="loading-spinner"></div>
-                    <p>🧠 Analisando com IA... isso pode demorar alguns segundos</p>
+                    <p>Analisando com IA... isso pode demorar alguns segundos</p>
                 </div>
 
                 <div id="research-results" class="research-results"></div>
@@ -307,15 +307,15 @@
         <!-- Investigation View -->
         <main id="investigate-view" class="view">
             <section class="view-header">
-                <h1>🕵️ Dossiê de Investigação</h1>
+                <h1>Dossiê de Investigação</h1>
                 <p class="subtitle">Geração automática de dossiês com dados públicos + web search + NER</p>
             </section>
 
             <div class="investigate-container">
                 <div class="investigate-tabs">
-                    <button class="inv-tab" onclick="switchInvTab('agent')">🤖 Agente IA</button>
-                    <button class="inv-tab active" onclick="switchInvTab('company')">🏢 Empresa (CNPJ)</button>
-                    <button class="inv-tab" onclick="switchInvTab('person')">👤 Pessoa</button>
+                    <button class="inv-tab" onclick="switchInvTab('agent')">Agente IA</button>
+                    <button class="inv-tab active" onclick="switchInvTab('company')">Empresa (CNPJ)</button>
+                    <button class="inv-tab" onclick="switchInvTab('person')">Pessoa</button>
                 </div>
 
                 <div id="inv-agent" class="inv-panel">
@@ -323,7 +323,7 @@
                         <label>Missão de Investigação</label>
                         <input type="text" id="inv-mission"
                             placeholder="Ex: Investigue a rede de empresas de João Silva...">
-                        <button class="btn-primary" onclick="investigateWithAgent()">🚀 INVESTIGAR</button>
+                        <button class="btn-primary" onclick="investigateWithAgent()">INVESTIGAR</button>
                     </div>
                     <p class="hint-text" style="margin-top: 0.5rem; font-size: 0.85rem;">
                         O agente irá automaticamente buscar no NUMIDIUM, consultar CNPJs, pesquisar na web e seguir
@@ -353,7 +353,7 @@
 
                 <div id="inv-loading" class="inv-loading" style="display: none;">
                     <div class="loading-spinner"></div>
-                    <p id="inv-loading-text">🔍 Coletando dados de múltiplas fontes... isso pode levar alguns segundos
+                    <p id="inv-loading-text">Coletando dados de múltiplas fontes... isso pode levar alguns segundos
                     </p>
                 </div>
 
@@ -364,7 +364,7 @@
         <!-- Timeline View -->
         <main id="timeline-view" class="view">
             <section class="view-header">
-                <h1>📅 Timeline</h1>
+                <h1>Timeline</h1>
                 <p class="subtitle">Visualização temporal de entidades e conexões</p>
             </section>
 
@@ -378,10 +378,10 @@
                     </select>
                     <select id="timeline-type" onchange="loadTimeline()">
                         <option value="">Todos os tipos</option>
-                        <option value="person">👤 Pessoas</option>
-                        <option value="organization">🏢 Organizações</option>
-                        <option value="location">📍 Locais</option>
-                        <option value="event">📅 Eventos</option>
+                        <option value="person">Pessoas</option>
+                        <option value="organization">Organizações</option>
+                        <option value="location">Locais</option>
+                        <option value="event">Eventos</option>
                     </select>
                 </div>
                 <div class="timeline-stats">
@@ -400,14 +400,14 @@
         <!-- Chat View -->
         <main id="chat-view" class="view">
             <section class="view-header">
-                <h1>💬 AVANGARD Chat</h1>
+                <h1>AVANGARD Chat</h1>
                 <p class="subtitle">Assistente inteligente com acesso ao grafo de conhecimento</p>
             </section>
 
             <div class="chat-container">
                 <div id="chat-messages" class="chat-messages">
                     <div class="chat-message assistant">
-                        <div class="message-avatar">🛡️</div>
+                        <div class="message-avatar">AV</div>
                         <div class="message-content">
                             <p>Olá! Sou o AVANGARD, seu assistente de inteligência.</p>
                             <p>Posso responder perguntas usando o conhecimento do NUMIDIUM e pesquisar na web quando
@@ -421,9 +421,9 @@
                     <div class="chat-options">
                         <label>
                             <input type="checkbox" id="chat-use-web" checked>
-                            🌐 Incluir pesquisa web
+                            Incluir pesquisa web
                         </label>
-                        <button class="btn-text" onclick="clearChatHistory()">🗑️ Limpar histórico</button>
+                        <button class="btn-text" onclick="clearChatHistory()">Limpar histórico</button>
                     </div>
                     <div class="chat-input-box">
                         <input type="text" id="chat-input" placeholder="Digite sua pergunta..."
@@ -437,14 +437,14 @@
         <!-- AetherMap View -->
         <main id="aethermap-view" class="view">
             <section class="view-header">
-                <h1>🌌 AetherMap</h1>
+                <h1>AetherMap</h1>
                 <p class="subtitle">Mapeamento semântico de documentos - indexação, busca e extração de entidades</p>
             </section>
 
             <div class="aethermap-container">
                 <!-- Index Section -->
                 <div class="aether-section">
-                    <h3>📥 Indexar Documentos</h3>
+                    <h3>Indexar Documentos</h3>
                     <div class="aether-tabs">
                         <button class="aether-tab active" onclick="showAetherTab('upload')">Upload</button>
                         <button class="aether-tab" onclick="showAetherTab('entities')">Entidades do NUMIDIUM</button>
@@ -457,7 +457,7 @@
                             <input type="checkbox" id="aether-fast-mode" checked>
                             Modo rápido (PCA)
                         </label>
-                        <button class="btn-primary" onclick="aetherUploadFile()">📤 Enviar Arquivo</button>
+                        <button class="btn-primary" onclick="aetherUploadFile()">Enviar Arquivo</button>
                     </div>
 
                     <div id="aether-tab-entities" class="aether-tab-content">
@@ -468,19 +468,19 @@
                             <option value="location">Locais</option>
                         </select>
                         <input type="number" id="aether-entity-limit" value="500" placeholder="Limite">
-                        <button class="btn-primary" onclick="aetherIndexEntities()">🔄 Indexar Entidades</button>
+                        <button class="btn-primary" onclick="aetherIndexEntities()">Indexar Entidades</button>
                     </div>
 
                     <div id="aether-tab-text" class="aether-tab-content">
                         <textarea id="aether-text-input" placeholder="Cole os documentos aqui (um por linha)..."
                             rows="5"></textarea>
-                        <button class="btn-primary" onclick="aetherIndexText()">📝 Indexar Textos</button>
+                        <button class="btn-primary" onclick="aetherIndexText()">Indexar Textos</button>
                     </div>
                 </div>
 
                 <!-- Status Section -->
                 <div class="aether-section aether-status">
-                    <h3>📊 Status</h3>
+                    <h3>Status</h3>
                     <div id="aether-status-content">
                         <p class="mono-label">Nenhum documento indexado</p>
                     </div>
@@ -488,7 +488,7 @@
 
                 <!-- Search Section -->
                 <div class="aether-section">
-                    <h3>🔍 Busca Semântica (RAG)</h3>
+                    <h3>Busca Semântica (RAG)</h3>
                     <div class="aether-search-box">
                         <input type="text" id="aether-search-query"
                             placeholder="Faça uma pergunta sobre os documentos..."
@@ -500,7 +500,7 @@
 
                 <!-- NER Section -->
                 <div class="aether-section">
-                    <h3>🏷️ Extração de Entidades (NER)</h3>
+                    <h3>Extração de Entidades (NER)</h3>
                     <button class="btn-secondary" onclick="aetherExtractEntities()">Extrair Entidades</button>
                     <button class="btn-secondary" onclick="aetherAnalyzeGraph()">Analisar Grafo</button>
                     <div id="aether-ner-result" class="aether-result"></div>
@@ -531,8 +531,8 @@
                         <option value="grid">Grade</option>
                         <option value="breadthfirst">Hierárquico</option>
                     </select>
-                    <button class="btn-secondary" onclick="showAddRelationshipModal()">🔗 + CONEXÃO</button>
-                    <button class="btn-primary" onclick="loadNetworkGraph()">🔄 RECARREGAR</button>
+                    <button class="btn-secondary" onclick="showAddRelationshipModal()">+ CONEXÃO</button>
+                    <button class="btn-primary" onclick="loadNetworkGraph()">RECARREGAR</button>
                 </div>
             </section>
             <div id="cy-container"></div>
@@ -560,11 +560,11 @@
             <div class="modal-content modal-large">
                 <button class="modal-close" onclick="closeMergeModal()">&times;</button>
                 <div class="merge-modal-body">
-                    <h2>🔗 Mesclar Entidades Duplicadas</h2>
+                    <h2>Mesclar Entidades Duplicadas</h2>
 
                     <div class="merge-suggestions">
                         <h3>Sugestões da IA</h3>
-                        <button class="btn-secondary" onclick="loadMergeSuggestions()">🧠 Buscar Duplicatas</button>
+                        <button class="btn-secondary" onclick="loadMergeSuggestions()">Buscar Duplicatas</button>
                         <div id="merge-suggestions-list" class="merge-suggestions-list">
                             <p class="hint-text">Clique no botão para a IA analisar entidades duplicadas</p>
                         </div>
@@ -600,7 +600,7 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="closeRelationshipModal()">&times;</button>
                 <div class="relationship-modal-body">
-                    <h2>🔗 Nova Conexão</h2>
+                    <h2>Nova Conexão</h2>
                     <div class="relationship-form">
                         <div class="form-group">
                             <label>Entidade Origem</label>
@@ -636,7 +636,7 @@
         <div id="project-modal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>📂 Gerenciar Projetos</h2>
+                    <h2>Gerenciar Projetos</h2>
                     <button class="modal-close" onclick="closeProjectModal()">×</button>
                 </div>
                 <div class="modal-body">
