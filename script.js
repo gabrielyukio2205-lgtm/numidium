@@ -2059,6 +2059,243 @@ function closeProjectModal() {
 }
 
 // ==========================================
+// AetherMap Functions
+// ==========================================
+
+let aetherJobId = null;
+
+function showAetherTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.aether-tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.aether-tab').forEach(btn => btn.classList.remove('active'));
+
+    // Show selected tab
+    document.getElementById(`aether-tab-${tabName}`).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function aetherShowLoading(show) {
+    document.getElementById('aether-loading').style.display = show ? 'flex' : 'none';
+}
+
+function aetherUpdateStatus(data) {
+    const statusDiv = document.getElementById('aether-status-content');
+    statusDiv.innerHTML = `
+        <p><strong>Job ID:</strong> ${data.job_id}</p>
+        <p><strong>Documentos:</strong> ${data.num_documents}</p>
+        <p><strong>Clusters:</strong> ${data.num_clusters}</p>
+        <p><strong>Ruído:</strong> ${data.num_noise}</p>
+    `;
+    aetherJobId = data.job_id;
+}
+
+async function aetherUploadFile() {
+    const fileInput = document.getElementById('aether-file');
+    const fastMode = document.getElementById('aether-fast-mode').checked;
+
+    if (!fileInput.files[0]) {
+        alert('Selecione um arquivo');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('fast_mode', fastMode.toString());
+
+    aetherShowLoading(true);
+    try {
+        const response = await fetch(`${API_BASE}/aethermap/upload`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Session-Id': sessionId }
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        aetherUpdateStatus(data);
+
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    } finally {
+        aetherShowLoading(false);
+    }
+}
+
+async function aetherIndexEntities() {
+    const entityType = document.getElementById('aether-entity-type').value;
+    const limit = parseInt(document.getElementById('aether-entity-limit').value) || 500;
+
+    aetherShowLoading(true);
+    try {
+        const body = { limit };
+        if (entityType) body.entity_types = [entityType];
+
+        const response = await fetch(`${API_BASE}/aethermap/index-entities`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        aetherUpdateStatus(data);
+
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    } finally {
+        aetherShowLoading(false);
+    }
+}
+
+async function aetherIndexText() {
+    const text = document.getElementById('aether-text-input').value;
+    const documents = text.split('\n').filter(line => line.trim());
+
+    if (documents.length === 0) {
+        alert('Cole alguns documentos (um por linha)');
+        return;
+    }
+
+    aetherShowLoading(true);
+    try {
+        const response = await fetch(`${API_BASE}/aethermap/index`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId
+            },
+            body: JSON.stringify({ documents, fast_mode: true })
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        aetherUpdateStatus(data);
+
+    } catch (error) {
+        alert('Erro: ' + error.message);
+    } finally {
+        aetherShowLoading(false);
+    }
+}
+
+async function aetherSearch() {
+    const query = document.getElementById('aether-search-query').value;
+    if (!query) return;
+
+    if (!aetherJobId) {
+        alert('Indexe documentos primeiro');
+        return;
+    }
+
+    const resultDiv = document.getElementById('aether-search-result');
+    resultDiv.innerHTML = '<p class="mono-label">Buscando...</p>';
+
+    try {
+        const response = await fetch(`${API_BASE}/aethermap/search`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId
+            },
+            body: JSON.stringify({ query, turbo_mode: true })
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        resultDiv.innerHTML = `
+            <div class="aether-answer">
+                <h4>Resposta RAG:</h4>
+                <p>${data.summary || 'Sem resposta'}</p>
+            </div>
+        `;
+
+    } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Erro: ${error.message}</p>`;
+    }
+}
+
+async function aetherExtractEntities() {
+    if (!aetherJobId) {
+        alert('Indexe documentos primeiro');
+        return;
+    }
+
+    const resultDiv = document.getElementById('aether-ner-result');
+    resultDiv.innerHTML = '<p class="mono-label">Extraindo entidades...</p>';
+
+    try {
+        const response = await fetch(`${API_BASE}/aethermap/entities`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId
+            }
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+
+        let html = `<p><strong>Nós:</strong> ${data.node_count} | <strong>Arestas:</strong> ${data.edge_count}</p>`;
+
+        if (data.hubs && data.hubs.length) {
+            html += '<h4>Entidades Centrais (Hubs):</h4><ul>';
+            data.hubs.forEach(hub => {
+                html += `<li><strong>${hub.entity}</strong> (${hub.type}) - ${hub.degree} conexões</li>`;
+            });
+            html += '</ul>';
+        }
+
+        if (data.insights) {
+            html += `<p><strong>Total conexões:</strong> ${data.insights.total_connections || 0}</p>`;
+        }
+
+        resultDiv.innerHTML = html;
+
+    } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Erro: ${error.message}</p>`;
+    }
+}
+
+async function aetherAnalyzeGraph() {
+    if (!aetherJobId) {
+        alert('Indexe documentos primeiro');
+        return;
+    }
+
+    const resultDiv = document.getElementById('aether-ner-result');
+    resultDiv.innerHTML = '<p class="mono-label">Analisando grafo com LLM...</p>';
+
+    try {
+        const response = await fetch(`${API_BASE}/aethermap/analyze`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId
+            }
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        resultDiv.innerHTML = `
+            <h4>Análise do Grafo:</h4>
+            <p>${data.analysis || 'Sem análise disponível'}</p>
+        `;
+
+    } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Erro: ${error.message}</p>`;
+    }
+}
+
+// ==========================================
 // Initialize
 // ==========================================
 

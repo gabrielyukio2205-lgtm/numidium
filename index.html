@@ -31,6 +31,7 @@
                 <a href="#" class="nav-link" data-view="ingest">INGESTÃO</a>
                 <a href="#" class="nav-link" data-view="research">PESQUISAR</a>
                 <a href="#" class="nav-link" data-view="investigate">🕵️ DOSSIÊ</a>
+                <a href="#" class="nav-link" data-view="aethermap">🌌 AETHERMAP</a>
                 <a href="#" class="nav-link" data-view="chat">💬 CHAT</a>
                 <a href="#" class="nav-link" data-view="map">MAPA</a>
                 <a href="#" class="nav-link" data-view="network">REDE</a>
@@ -429,6 +430,86 @@
                             onkeypress="if(event.key==='Enter') sendChatMessage()">
                         <button class="btn-primary" onclick="sendChatMessage()">Enviar</button>
                     </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- AetherMap View -->
+        <main id="aethermap-view" class="view">
+            <section class="view-header">
+                <h1>🌌 AetherMap</h1>
+                <p class="subtitle">Mapeamento semântico de documentos - indexação, busca e extração de entidades</p>
+            </section>
+
+            <div class="aethermap-container">
+                <!-- Index Section -->
+                <div class="aether-section">
+                    <h3>📥 Indexar Documentos</h3>
+                    <div class="aether-tabs">
+                        <button class="aether-tab active" onclick="showAetherTab('upload')">Upload</button>
+                        <button class="aether-tab" onclick="showAetherTab('entities')">Entidades do NUMIDIUM</button>
+                        <button class="aether-tab" onclick="showAetherTab('text')">Texto Direto</button>
+                    </div>
+
+                    <div id="aether-tab-upload" class="aether-tab-content active">
+                        <input type="file" id="aether-file" accept=".txt,.csv">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="aether-fast-mode" checked>
+                            Modo rápido (PCA)
+                        </label>
+                        <button class="btn-primary" onclick="aetherUploadFile()">📤 Enviar Arquivo</button>
+                    </div>
+
+                    <div id="aether-tab-entities" class="aether-tab-content">
+                        <select id="aether-entity-type">
+                            <option value="">Todos os tipos</option>
+                            <option value="person">Pessoas</option>
+                            <option value="organization">Organizações</option>
+                            <option value="location">Locais</option>
+                        </select>
+                        <input type="number" id="aether-entity-limit" value="500" placeholder="Limite">
+                        <button class="btn-primary" onclick="aetherIndexEntities()">🔄 Indexar Entidades</button>
+                    </div>
+
+                    <div id="aether-tab-text" class="aether-tab-content">
+                        <textarea id="aether-text-input" placeholder="Cole os documentos aqui (um por linha)..."
+                            rows="5"></textarea>
+                        <button class="btn-primary" onclick="aetherIndexText()">📝 Indexar Textos</button>
+                    </div>
+                </div>
+
+                <!-- Status Section -->
+                <div class="aether-section aether-status">
+                    <h3>📊 Status</h3>
+                    <div id="aether-status-content">
+                        <p class="mono-label">Nenhum documento indexado</p>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="aether-section">
+                    <h3>🔍 Busca Semântica (RAG)</h3>
+                    <div class="aether-search-box">
+                        <input type="text" id="aether-search-query"
+                            placeholder="Faça uma pergunta sobre os documentos..."
+                            onkeypress="if(event.key==='Enter') aetherSearch()">
+                        <button class="btn-primary" onclick="aetherSearch()">Buscar</button>
+                    </div>
+                    <div id="aether-search-result" class="aether-result"></div>
+                </div>
+
+                <!-- NER Section -->
+                <div class="aether-section">
+                    <h3>🏷️ Extração de Entidades (NER)</h3>
+                    <button class="btn-secondary" onclick="aetherExtractEntities()">Extrair Entidades</button>
+                    <button class="btn-secondary" onclick="aetherAnalyzeGraph()">Analisar Grafo</button>
+                    <div id="aether-ner-result" class="aether-result"></div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="aether-loading" class="inv-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Processando no AetherMap...</p>
                 </div>
             </div>
         </main>
