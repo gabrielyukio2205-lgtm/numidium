@@ -2080,13 +2080,96 @@ function aetherShowLoading(show) {
 
 function aetherUpdateStatus(data) {
     const statusDiv = document.getElementById('aether-status-content');
-    statusDiv.innerHTML = `
-        <p><strong>Job ID:</strong> ${data.job_id}</p>
-        <p><strong>Documentos:</strong> ${data.num_documents}</p>
-        <p><strong>Clusters:</strong> ${data.num_clusters}</p>
-        <p><strong>Ruído:</strong> ${data.num_noise}</p>
-    `;
     aetherJobId = data.job_id;
+
+    // Estatísticas básicas
+    let html = `
+        <div class="aether-stats-grid">
+            <div class="aether-stat">
+                <span class="aether-stat-value">${data.num_documents}</span>
+                <span class="aether-stat-label">Documentos</span>
+            </div>
+            <div class="aether-stat">
+                <span class="aether-stat-value">${data.num_clusters}</span>
+                <span class="aether-stat-label">Clusters</span>
+            </div>
+            <div class="aether-stat">
+                <span class="aether-stat-value">${data.num_noise}</span>
+                <span class="aether-stat-label">Ruído</span>
+            </div>
+            <div class="aether-stat">
+                <span class="aether-stat-value">${((1 - data.num_noise / data.num_documents) * 100).toFixed(1)}%</span>
+                <span class="aether-stat-label">Cobertura</span>
+            </div>
+        </div>
+        <p class="aether-job-id"><strong>Job:</strong> ${data.job_id}</p>
+    `;
+
+    // Métricas de qualidade (se disponível)
+    if (data.metrics && Object.keys(data.metrics).length > 0) {
+        html += `<div class="aether-metrics">`;
+        if (data.metrics.silhouette_score !== undefined) {
+            html += `<span class="metric-badge">Silhouette: ${data.metrics.silhouette_score.toFixed(3)}</span>`;
+        }
+        if (data.metrics.calinski_harabasz !== undefined) {
+            html += `<span class="metric-badge">CH Score: ${data.metrics.calinski_harabasz.toFixed(1)}</span>`;
+        }
+        html += `</div>`;
+    }
+
+    // Análise de clusters (se disponível)
+    if (data.cluster_analysis && data.cluster_analysis.clusters) {
+        html += `<div class="aether-clusters-preview"><h4>📊 Clusters Encontrados:</h4><ul>`;
+        data.cluster_analysis.clusters.slice(0, 5).forEach((cluster, idx) => {
+            const size = cluster.size || cluster.count || '?';
+            const label = cluster.label || cluster.name || `Cluster ${idx}`;
+            html += `<li><strong>${label}</strong> (${size} docs)</li>`;
+        });
+        if (data.cluster_analysis.clusters.length > 5) {
+            html += `<li class="more">... e mais ${data.cluster_analysis.clusters.length - 5} clusters</li>`;
+        }
+        html += `</ul></div>`;
+    }
+
+    statusDiv.innerHTML = html;
+
+    // Auto-carregar descrição dos clusters
+    aetherLoadClusterDescriptions();
+}
+
+async function aetherLoadClusterDescriptions() {
+    if (!aetherJobId) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/aethermap/describe-clusters`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const statusDiv = document.getElementById('aether-status-content');
+
+            if (data.insights && data.insights.clusters) {
+                let clusterHtml = `<div class="aether-cluster-insights"><h4>🧠 Análise dos Clusters:</h4>`;
+                data.insights.clusters.slice(0, 5).forEach(cluster => {
+                    clusterHtml += `
+                        <div class="cluster-insight">
+                            <strong>${cluster.label || 'Cluster ' + cluster.id}</strong>
+                            <p>${cluster.description || cluster.summary || 'Sem descrição'}</p>
+                        </div>
+                    `;
+                });
+                clusterHtml += `</div>`;
+                statusDiv.innerHTML += clusterHtml;
+            }
+        }
+    } catch (e) {
+        console.log('Cluster descriptions not available:', e);
+    }
 }
 
 async function aetherUploadFile() {
