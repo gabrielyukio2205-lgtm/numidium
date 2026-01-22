@@ -21,9 +21,9 @@ const CONFIG = {
     mouseDistance: 200,
     nodeSpeed: 0.3,
     colors: {
-        node: 'rgba(235, 241, 245, 0.5)',
-        line: 'rgba(38, 197, 237, 0.15)',
-        highlight: 'rgba(38, 197, 237, 0.4)'
+        node: 'rgba(236, 242, 246, 0.45)',
+        line: 'rgba(77, 214, 179, 0.12)',
+        highlight: 'rgba(245, 180, 91, 0.35)'
     }
 };
 
