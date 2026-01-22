@@ -3263,6 +3263,7 @@ header {
     background: rgba(9, 12, 17, 0.85);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    flex-wrap: nowrap;
 }
 
 header::after {
@@ -3292,6 +3293,10 @@ header::after {
     font-size: 0.9rem;
 }
 
+.brand {
+    flex-shrink: 0;
+}
+
 .logo-mark {
     width: 20px;
     height: 20px;
@@ -3317,6 +3322,8 @@ nav {
     border-radius: 999px;
     overflow-x: auto;
     scrollbar-width: none;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 nav::-webkit-scrollbar {
@@ -3359,6 +3366,8 @@ nav::-webkit-scrollbar {
     letter-spacing: 0.18em;
     text-transform: uppercase;
     font-size: 0.7rem;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .status-dot {
@@ -3772,7 +3781,13 @@ footer {
 }
 
 @media (max-width: 900px) {
+    header {
+        flex-wrap: wrap;
+    }
+
     nav {
+        order: 3;
+        width: 100%;
         border-radius: 14px;
     }
 }
