@@ -3322,6 +3322,8 @@ nav {
     border-radius: 999px;
     overflow-x: auto;
     scrollbar-width: none;
+    display: flex;
+    flex-wrap: nowrap;
     flex: 1 1 auto;
     min-width: 0;
 }
@@ -3337,6 +3339,7 @@ nav::-webkit-scrollbar {
     padding: 0.55rem 0.95rem;
     border-radius: 999px;
     position: relative;
+    white-space: nowrap;
 }
 
 .nav-link::after {
