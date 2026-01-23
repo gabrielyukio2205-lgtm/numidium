@@ -1,5 +1,5 @@
 // ==========================================
-// NUMIDIUM / VANTAGE - Frontend Application
+// NUMIDIUM - Frontend Application
 // ==========================================
 
 // API Configuration
@@ -21,9 +21,9 @@ const CONFIG = {
     mouseDistance: 200,
     nodeSpeed: 0.3,
     colors: {
-        node: 'rgba(236, 242, 246, 0.45)',
-        line: 'rgba(77, 214, 179, 0.12)',
-        highlight: 'rgba(245, 180, 91, 0.35)'
+        node: 'rgba(240, 230, 210, 0.5)',
+        line: 'rgba(202, 166, 90, 0.18)',
+        highlight: 'rgba(95, 164, 147, 0.35)'
     }
 };
 
@@ -896,11 +896,11 @@ async function loadMapData() {
 let cy = null;
 
 const NODE_COLORS = {
-    person: '#26C5ED',      // Cyan
-    organization: '#9B59B6', // Purple
-    location: '#2ECC71',     // Green
-    event: '#E74C3C',        // Red
-    unknown: '#95A5A6'       // Gray
+    person: '#caa65a',      // Brass
+    organization: '#9b6d3f', // Burnished copper
+    location: '#5fa493',     // Patina
+    event: '#b07b5a',        // Copper
+    unknown: '#7d705f'       // Ash
 };
 
 function initNetworkGraph() {
