@@ -919,24 +919,24 @@ function initNetworkGraph() {
                         return NODE_COLORS[ele.data('type')] || NODE_COLORS.unknown;
                     },
                     'label': 'data(label)',
-                    'color': '#EBF1F5',
+                    'color': '#f0e6d2',
                     'text-valign': 'bottom',
                     'text-halign': 'center',
                     'font-size': '10px',
-                    'font-family': 'Inter, sans-serif',
+                    'font-family': 'Alegreya Sans, sans-serif',
                     'text-margin-y': 5,
                     'width': 40,
                     'height': 40,
                     'border-width': 2,
-                    'border-color': '#2F363D'
+                    'border-color': '#463b2b'
                 }
             },
             {
                 selector: 'node:selected',
                 style: {
                     'border-width': 4,
-                    'border-color': '#26C5ED',
-                    'background-color': '#26C5ED'
+                    'border-color': '#caa65a',
+                    'background-color': '#caa65a'
                 }
             },
             {
@@ -945,20 +945,20 @@ function initNetworkGraph() {
                     'width': 60,
                     'height': 60,
                     'border-width': 4,
-                    'border-color': '#F1C40F'
+                    'border-color': '#d7b06b'
                 }
             },
             {
                 selector: 'edge',
                 style: {
                     'width': 2,
-                    'line-color': 'rgba(38, 197, 237, 0.4)',
-                    'target-arrow-color': 'rgba(38, 197, 237, 0.6)',
+                    'line-color': 'rgba(202, 166, 90, 0.35)',
+                    'target-arrow-color': 'rgba(202, 166, 90, 0.55)',
                     'target-arrow-shape': 'triangle',
                     'curve-style': 'bezier',
                     'label': 'data(label)',
                     'font-size': '8px',
-                    'color': '#8F9CA3',
+                    'color': '#b7a98e',
                     'text-rotation': 'autorotate',
                     'text-margin-y': -10
                 }
@@ -967,8 +967,8 @@ function initNetworkGraph() {
                 selector: 'edge:selected',
                 style: {
                     'width': 4,
-                    'line-color': '#26C5ED',
-                    'target-arrow-color': '#26C5ED'
+                    'line-color': '#caa65a',
+                    'target-arrow-color': '#caa65a'
                 }
             }
         ],
