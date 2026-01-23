@@ -189,7 +189,11 @@ document.querySelectorAll('.nav-link').forEach(link => {
 function switchView(viewName) {
     // Update nav
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
+    const activeLink = document.querySelector(`[data-view="${viewName}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+        activeLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
 
     // Update views
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
